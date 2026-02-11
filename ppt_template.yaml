@@ -70,7 +70,7 @@ design_system:
       - "Avoid heavy borders; use whitespace or light gray fills (#F2F2F2) to separate sections"
       - "Icons should be outlined (stroke style) in Dark Blue or Gray"
 
-slide_templates:
+  slide_templates:
   - type: "Cover Slide"
     layout: "Split Screen or Full Gradient"
     elements:
