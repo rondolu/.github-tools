@@ -1,0 +1,108 @@
+
+#檔案名稱: ppt_template.yaml
+風格: 俐落知性 / Cathay CUBE APP留白美學 / 數位賦能
+核心概念: 運用摘要整理出的色調堆疊層次，展現專業冷靜但不失暖色系點綴的留白美學
+
+presentation_metadata:
+  # title: "Agentic Code Review 操作手冊"
+  theme_concept: "Digital Empowerment & Minimalist Trust"
+  aspect_ratio: "16:9"
+  language: "Traditional Chinese (Taiwan)"
+
+design_system:
+  color_palette:
+    rule: "60-30-10 Rule"
+    primary_tones:  # 60% of visual weight (Backgrounds, Headers, Main Charts)
+      - name: "Cathay Dark Blue"
+        hex: "#0843AD"
+      - name: "Tech Blue"
+        hex: "#186AFF"
+      - name: "Data Teal"
+        hex: "#36CBDA"
+    neutral_tones: # 30% of visual weight (Text, Backgrounds, Borders)
+      - name: "Text Black"
+        hex: "#262626"
+      - name: "Subtitle Gray"
+        hex: "#A5A5A5"
+      - name: "Canvas White"
+        hex: "#FFFFFF"
+      - name: "Section Gray"
+        hex: "#F2F2F2"
+    accent_tones: # 10% of visual weight (Highlights, KPIs, Call-to-Actions)
+      - name: "Energy Yellow"
+        hex: "#FFD600"
+      - name: "Action Orange"
+        hex: "#F75801"
+    gradients:
+      - "Linear Gradient: #B2D9FC to #186AFF to #0843AD (Top-Left to Bottom-Right)"
+      - "Linear Gradient: #CDF2F6 to #82DFE8 to #36CBDA"
+
+  typography:
+    english_font: "Arial"
+    chinese_font: "Microsoft JhengHei (微軟正黑體)"
+    hierarchy:
+      slide_title:
+        size: "30pt"
+        weight: "Bold"
+        color: "#0843AD" # Dark Blue
+      section_header:
+        size: "28pt"
+        weight: "Bold"
+        color: "#262626"
+      subtitle:
+        size: "22pt"
+        weight: "Regular"
+        color: "#186AFF" # Tech Blue
+      body_text:
+        size: "14pt"
+        weight: "Regular"
+        line_height: "1.5"
+        color: "#262626"
+      annotation:
+        size: "12pt"
+        color: "#A5A5A5"
+
+  layout_rules:
+    whitespace: "High (Min 30% of slide area empty)"
+    grid_system: "12-column modular grid for charts and content blocks"
+    visual_style:
+      - "Use rounded corners for images and content blocks (simulating App UI)"
+      - "Avoid heavy borders; use whitespace or light gray fills (#F2F2F2) to separate sections"
+      - "Icons should be outlined (stroke style) in Dark Blue or Gray"
+
+slide_templates:
+  - type: "Cover Slide"
+    layout: "Split Screen or Full Gradient"
+    elements:
+      - "Large logo placement: Top Left or Center"
+      - "Background: Abstract tech imagery (fiber optics, building abstract) or Gradient Blue"
+      - "Title: White text on dark background or Dark Blue text on white"
+
+  - type: "Section Divider"
+    layout: "Minimalist Center"
+    elements:
+      - "Large Chapter Number (e.g., 01)"
+      - "Full flood color background (Primary Blue) or Pure White with large typography"
+
+  - type: "Content - Data Chart"
+    layout: "Chart Left, Insight Right"
+    elements:
+      - "Bar Charts: Use Blue (#186AFF) for current data, Light Blue (#B2D9FC) for historical"
+      - "KPI Highlights: Large font size (40pt+) in Dark Blue, accented with Orange line or dot"
+
+  - type: "Content - Timeline/Process"
+    layout: "Horizontal Flow"
+    elements:
+      - "Step-by-step icons connected by thin lines"
+      - "Use Teal (#36CBDA) for 'Future' or 'Next Steps' indicators"
+
+  - type: "Ending"
+    layout: "Simple Contact"
+    text: "Thank you!"
+    background: "Gradient curve or clean white"
+
+instructions_for_generation:
+  - "Ensure all charts are clear, flat design, informative and use the specified palette."
+  - "Maintain a professional, corporate yet innovative tone."
+  - "Do not use Serif fonts."
+  - "Images should be high-quality, representing 'Connectivity', 'Scale', and 'future'."
