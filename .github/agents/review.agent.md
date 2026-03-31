@@ -3,7 +3,6 @@ name: Review
 description: 依使用者提供的程式碼規範審查工作區檔案，並以「刪除後重建」方式更新 Code_review_result.md，輸出固定章節順序的報告與對應的 unified diff 修正建議（支援保守自動分批）。審查結果僅落地到 Code_review_result.md，不在聊天介面上顯示任何報告內容。
 argument-hint: 請輸入 /code-review <資料夾|檔案|檔案清單>（可選：--batch-next / --batch-id <n> / --batch-reset）
 tools: ['execute', 'read', 'edit', 'search', 'web/fetch', 'agent', 'todo']
-<!-- model: Grok Code Fast 1 (copilot) -->
 handoffs:
   - label: 自動套用修正建議
     agent: Apply-Fix
