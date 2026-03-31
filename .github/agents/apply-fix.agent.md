@@ -3,7 +3,7 @@ name: Apply-Fix
 description: 解析並套用 Code_review_result.md 的 diff 修正
 argument-hint: 請輸入 /apply-fix（可選：--include-warning、--from <report_path>）以套用報告內的 diff
 tools: ['read', 'edit', 'search', 'agent', 'todo']
-model: Grok Code Fast 1 (copilot)
+<!-- model: Grok Code Fast 1 (copilot) -->
 handoffs:
   - label: 重新執行code review
     agent: Review
