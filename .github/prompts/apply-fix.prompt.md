@@ -3,7 +3,6 @@ name: apply-fix
 description: 套用 Code_review_result.md 的修正 diff
 agent: Apply-Fix
 argument-hint: 可選參數：--include-warning（預設只套用 Fail❌）
-model: Grok Code Fast 1 (copilot)
 ---
 
 # /apply-fix — 自動套用審查修正

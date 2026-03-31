@@ -3,14 +3,13 @@ name: code-review
 description: Python / BigQuery Standard SQL / checkmarx
 agent: Review
 argument-hint: 貼上要審查的 Python/SQL 程式碼或 diff；可包含關鍵字或標籤：{報表}/報表/report/{資料匯出}/匯出/export/{載入}/load/etl
-model: Grok Code Fast 1 (copilot)
 ---
 
-# Coding Style & Security Standard（Python / BigQuery Standard SQL）
+# Coding Style & Checkmarx Standard
 
-> 目的：只定義「coding style standard」與「Security Baseline」一致性規範，提升可讀性、可維護性、安全性與 code review 的可重複性。
+> 目的：只定義「coding style standard」與「security Baseline」一致性規範，提升可讀性、可維護性、安全性與 code review 的可重複性。
 >
-> 非目標：不規範任何業務邏輯／業務規則；業務正確性請以測試案例與測試 review 為主。
+> 非目標：不規範任何業務邏輯／業務規則；業務正確性請以測試案例與測試review為主。
 
 ---
 
@@ -68,15 +67,15 @@ model: Grok Code Fast 1 (copilot)
 
 - **每條規則狀態（Status）**判定：
 
-    - 規則屬 **MUST** 且未滿足 → **Fail❌**
-    - 規則屬 **SHOULD** 且未滿足 → **Warning⚠️**
-    - 規則屬 **MAY** 且未滿足 → **Pass✅**（仍需在「詳細說明」註記未符合與原因）
+  - 規則屬 **MUST** 且未滿足 → **Fail❌**
+  - 規則屬 **SHOULD** 且未滿足 → **Warning⚠️**
+  - 規則屬 **MAY** 且未滿足 → **Pass✅**（仍需在「詳細說明」註記未符合與原因）
 
 - **整體（Overall）狀態**判定（取最高嚴重度）：
 
-    - 任一 MUST Fail → Overall = **Fail❌**
-    - 否則任一 SHOULD 未滿足 → Overall = **Pass⚠️**
-    - 否則 → Overall = **Pass✅**
+  - 任一 MUST Fail → Overall = **Fail❌**
+  - 否則任一 SHOULD 未滿足 → Overall = **Pass⚠️**
+  - 否則 → Overall = **Pass✅**
 - **修正程式碼片段**：僅針對 **Fail❌（MUST 未滿足）** 的項目提供修正程式碼；Warning⚠️ 僅提供建議。
 
 ### 2.2 場景觸發（必用）
@@ -88,18 +87,17 @@ model: Grok Code Fast 1 (copilot)
 
 - MUST：每次審查都要先宣告 `Denominator Type`，僅能為 `Folder` / `PR` / `FileList` / `N/A`。
 - MUST：Denominator 必須可被可靠枚舉為 repo 相對路徑清單；不得用推測或抽樣。預設選擇規則：
-    - 使用者提供變更檔案清單或可解析的 diff header → `PR`。
-    - 指定資料夾或 glob → `Folder`。
-    - 其他情境需人工列出檔案清單 → `FileList`。
-    - 無法取得任何清單 → `N/A`（直接 Fail(Coverage)）。
+  - 使用者提供變更檔案清單或可解析的 diff header → `PR`。
+  - 指定資料夾或 glob → `Folder`。
+  - 其他情境需人工列出檔案清單 → `FileList`。
+  - 無法取得任何清單 → `N/A`（直接 Fail(Coverage)）。
 - MUST：`Excluded` 不得計入 `N`；所有排除規則需在 `Scope/Exclude` 區塊輸出 `Exclude Rules`（glob / 類型 / 其他條件）與 `Exclude Reasons`（包含 reason_code + 描述），並提供 `Excluded Count`（可列前 N 筆 + 省略說明）。
 - MUST：對納入分母的所有項目逐一枚舉，並標註 `Reviewed` 或 `Unreviewed`；同時輸出 `Total (N)`、`Reviewed (R)`、`Unreviewed (U)`，並自我驗證 `N = R + U`。若無法成立，Coverage 視為 `N/A`。
 - MUST：Coverage 僅在 `R = N ≠ 0` 時才可標示為 100%；任何 `Coverage < 100%` 或 `Coverage = N/A` → `Fail(Coverage)`，並禁止輸出 `## Rules` / `## Fail diff` / `## CTA`（仍需輸出 `Scope/Exclude`、`Coverage`、`Overall` 與 Summary）。
 - MUST：`Coverage Reason` 為必填欄位，內容需說明：分母類型、枚舉來源、排除規則、若 Coverage 未達 100% 則列出缺漏項與原因。
-- MUST：清單過長時，可輸出「摘要」取代引出全部項目，但必須保留：`Total` / `Reviewed` / `Unreviewed` / `Excluded` / `N` / `Omitted`（省略數量）/ `Top N Reviewed Items` / `Missing/Excluded Reasons Summary`（原因碼建議使用：`NOT_PROVIDED`、`PATH_UNKNOWN`、`BINARY_OR_IMAGE`、`GENERATED`、`THIRD_PARTY`、`OUT_OF_SCOPE`、`TOO_LARGE`、`TIME_BUDGET`）。
-- SHOULD：`Top N Reviewed Items` 列表包含 `item_id`（檔案或規則）、`status`、`one-line reason`；若 `Reviewed > N`，需額外輸出 `... omitted: <Omitted> items`。
+- MUST：清單過長時，可輸出「摘要」取代引出全部項目，但必須保留：`Total` / `Reviewed` / `Unreviewed` / `Excluded` / `N` / `Omitted`（省略數量 / `Missing/Excluded Reasons Summary`（原因碼建議使用：`NOT_PROVIDED`、`PATH_UNKNOWN`、`BINARY_OR_IMAGE`、`GENERATED`、`THIRD_PARTY`、`OUT_OF_SCOPE`、`TOO_LARGE`、`TIME_BUDGET`）。
+- SHOULD: `Omitted reason` 說明省略項目的類型與原因 
 - SHOULD：`Missing/Excluded Reasons Summary` 需將同原因碼聚合並說明其屬性（unreviewed 或 excluded）。
-- MAY：為減少報告長度，可設定 N≤30；若需完整清單，可附加檔或指示使用者改用 `/apply-fix --list-all` 之類流程。
 
 ---
 
@@ -156,11 +154,20 @@ model: Grok Code Fast 1 (copilot)
 - SHOULD：錯誤訊息要可行動（actionable），包含必要上下文（例如 resource id、參數摘要），但不要記錄敏感資料。
 
 ### 3.7 Logging（Style）
-
-- MUST：禁止以 `print(...)` 做長期日誌；改用GCP Cloud Logging 的自訂 logger（custom-log）寫入日誌。
-- MUST：所有 Error/Warning 需寫入GCP Cloud Logging 的自訂 logger（custom-log）寫入日誌。
+- MUST：在 `except` 區塊中，禁止以 `py_log.*` / `logging.*` 寫入 Exception 訊息；Exception 訊息必須走 custom-log。
 - SHOULD：warning/error 需包含可追蹤的識別資訊（例如 request id/uuid），但不要包含 secret/token。
+- MAY：Info/Debug/Notice 是否寫入 custom-log，可由開發者依情境決定。
 - MAY：log message 以「事件 + 關鍵欄位」形式撰寫（偏結構化），避免單純堆疊長字串。
+
+custom-log 標準呼叫方式（修正建議時優先使用）：
+
+```python
+from google.cloud import logging as cloud_logging
+
+logging_client = cloud_logging.Client()
+log_name = "custom-log"
+logger = logging_client.logger(log_name)
+```
 
 ---
 
@@ -169,11 +176,11 @@ model: Grok Code Fast 1 (copilot)
 ### 4.1 語法與模式
 
 - MUST：使用 **BigQuery Standard SQL**。
-- MUST：在 Python 端明確 `use_legacy_sql = False`（若使用 BigQuery client）。
+- SHOULD：在 Python 端明確 `use_legacy_sql = False`（若使用 BigQuery client）。
 
 ### 4.2 排版
 
-- MUST：使用 SQL formatter（Tab size=4、Keywords=Upper、Indentation=Tabular, Right）。
+- MUST：使用 SQL formatter（Language=BigQuery、Tab size=4、Keywords=Upper、Data type=Upper、Function=Upper、Identifier=Preserve、Indentation=Tabular, Right）。
 - MUST：關鍵字大小寫一致（全大寫如：`SELECT`, `FROM`, `WHERE`, `JOIN`, `QUALIFY`）。
 - MUST：資料型態大小寫一致(全大寫如: `STRING`, `INT64`, `FLOAT64`, `DATETIME`)。
 - MUST：函數大小寫一致(全大寫如: `CAST()`, `DATE()`, `CURRENT_DATE()` )。
@@ -182,6 +189,7 @@ model: Grok Code Fast 1 (copilot)
 - SHOULD：一行一個欄位（`SELECT` list、`INSERT` 欄位清單）；逗號放行尾。
 
 ### 4.3 命名
+
 - MUST：CTE/alias 使用 `snake_case`。
 - SHOULD：alias 需可讀（例如 `customer`/`application`），避免 `a/b/c`（除非 query 很短且語意清楚）。
 
@@ -207,33 +215,40 @@ model: Grok Code Fast 1 (copilot)
 
 ---
 
-## 5) Step 3 — Security Standard (Python/Web)
+## 5) Step 3 — Checkmarx Standard
 
-> 基於 Checkmarx 掃描與 OWASP 標準。
+> 基於 Checkmarx rules 與 OWASP 標準。
 
 ### 5.1 錯誤處理與資訊洩露 (Information Exposure)
-- MUST：**禁止直接回傳原始錯誤訊息**。API 或前端回應中包含 `str(e)`、Exception 物件或 Stack Trace的物件要用GCP Cloud Logging 的自訂 logger（custom-log）寫入日誌。
+
+- MUST：**原始錯誤訊息需用custom-log回傳**。API 或前端回應中包含 `str(e)`、Exception 物件或 Stack Trace的物件要用GCP Cloud Logging 的自訂 logger（custom-log）寫入日誌。
 - MUST：禁止在 Log 或 UI 輸出敏感的內部結構資訊（如資料庫連線字串、資料表欄位定義）。
 - SHOULD：使用統一的錯誤/警告回應機制，用GCP Cloud Logging 的自訂 logger（custom-log）寫入日誌。
 
 ### 5.2 日誌安全 (Logging Security)
-- MUST：**防範 Log Forging**。寫入 Log 的變數若來自使用者輸入（如 `get_json`），改為使用環境變數傳遞（避免外部控制 API 請求內容）。
+- SHOULD：禁止以 `print(...)` 做長期日誌；改用GCP Cloud Logging 的自訂 logger（custom-log）寫入日誌。
+- MUST：所有 Exception / Error / Warning 事件都需寫入GCP Cloud Logging 的自訂 logger（custom-log）寫入日誌。
+- MUST：**防範 Log Forging**。寫入 Log 的變數若來自使用者輸入（如 `get_json`）建議使用 `logger.log_text(f"...")` 的寫法，但需注意內容安全性。
 - MUST：禁止在 Log 紀錄中輸出 PII（如身分證、電話）、Session ID、Auth Token 或業務敏感資料。
-- MUST：**防範不受控制的格式化字串**。禁止將外部輸入直接用於格式化字串（如 `f"Hello {external_input}"`）；應使用 `string.Template.safe_substitute()` 或其他安全方法處理。
+- MUST：**防範不受控制的格式化字串(僅限 print)**。禁止在 `print()` 函式中使用包含外部輸入的 f-string（如 `print(f"Data: {user_input}")`）。使用 `logger.log_text(f"...")`、`logger.info(f"...")`、`logging.info(f"...")` 等 logging 函式時，允許使用包含外部輸入的 f-string（Checkmarx 合規），但需確保不包含 PII 或敏感資料。其他非 logging 場景的格式化應使用 `string.Template.safe_substitute()` 等安全方法。
 
 ### 5.3 網路連線與傳輸安全 (Transmission)
+
 - MUST：**強制 SSL 驗證**。使用 HTTP Client（如 `requests`）時，嚴禁設定 `verify=False`。SSL 驗證參數由環境變數控制，確保一致性。
 - MUST：**防範 SSRF**。若程式會根據輸入請求遠端網址，將相關參數改為使用環境變數傳遞（避免外部控制 API 請求內容）。
-- MUST：Web 應用程式應設定 `Strict-Transport-Security` (HSTS) 標頭，預設使用Talisman (flask_talisman == 1.1.0)。
+- MUST：Web 應用程式應設定 HSTS 標頭，預設使用Talisman (flask_talisman == 1.1.0)。
+  - **適用條件（Flask 框架限定）**：本條僅在程式碼偵測到 Flask 框架時觸發（即存在 `from flask` / `import flask` / `flask_talisman` 相關 import）。使用 FastAPI 或其他非 Flask 框架時，本條**不適用、不納入審查**。
 
 ### 5.4 組態與憑證管理 (Secrets & Config)
+
 - MUST：**停用除錯模式**。正式環境程式碼中，`app.run()` 的 `debug` 參數必須為 `False`。
 - MUST：**禁止硬編碼憑證**。程式碼中不可包含寫死的密碼、API Key 或連線字串（如 `_Password` 變數）；應使用不具敏感含義且可被弱掃軟體接受的同義字，如 Credential_Code。
 - MUST：Web 應用程式回應標頭應設定 `Content-Security-Policy` (CSP)，並限制所有來源為 none、禁止被 frame、禁止表單提交、禁止 base-uri。
 
 ### 5.5 寫法指引 (Coding guidelines)
+
 - MUST：**對齊弱掃規範**。將 with open(...).read() 改為單行讀取（例如 `data = open(...).read()`），以符合 Checkmarx 的安全掃描規範。
-- MUST：**防範不受控制的格式化字串**。禁止將使用者輸入直接用於格式化字串（如 `f"Hello {user_input}"`）；應使用 `string.Template.safe_substitute()` 或其他安全方法處理。
+
 ---
 
 ## 6) Step 4 — Code Review Checklist
@@ -241,6 +256,7 @@ model: Grok Code Fast 1 (copilot)
 > 使用方式：PR reviewer（人）與 AI reviewer 都只對照此清單，不討論業務規則；業務規則請看測試案例。
 
 ### 6.1 Python Style Checklist
+
 - [ ] 縮排 4 spaces、無 Tab、無行尾空白
 - [ ] 判斷式比較 None 統一用 `is None` / `is not None`
 - [ ] 複合判斷式必須使用小括號 () 包裹明確邏輯
@@ -249,23 +265,28 @@ model: Grok Code Fast 1 (copilot)
 - [ ] imports 分組清楚、無 wildcard import、無循環依賴跡象
 - [ ] 每個 Method/Function 有 docstring（目的/Args/Returns）
 - [ ] 跨層邊界函式有型別標註；`Optional`/`| None` 用法一致
-- [ ] 無 `print(...)` 作為日誌；改用自訂義logger
+- [ ] 無 `print(...)` 作為日誌；改用google cloud logging 的自訂 logger (custom-log)
 - [ ] 無裸露 `except:`；無吞例外；必要時 `raise ... from e`
-- [ ] Error/Warning 必須寫入 logger，且有足夠上下文
+- [ ] Exception/Error/Warning 事件必須寫入google cloud logging 的自訂 logger (custom-log)
+- [ ] except 區塊中不得以 `py_log.*` / `logging.*` 寫入 Exception 訊息
 - [ ] 函式/方法長度與巢狀結構合理（Method/Class 不超過 50 行；巢狀不超過 3 層）
 
-### 6.2 Security Checklist (Checkmarx Compliance)
+### 6.2 Checkmarx Checklist
+
 - [ ] **Error Handling**: 未直接回傳 `str(e)` 或 Stack Trace 給前端/API
-- [ ] **Logging**: Log 內無 PII/Secrets；使用者輸入寫入 Log 前已淨化 (防 Log Forging)
+- [ ] **Logging**: Log 內無 PII/Secrets；logger函式(ex:logger.log_text)允許包含外部輸入但不包含敏感資料
+- [ ] **Format String**: 禁止在 `print()` 中使用包含外部輸入的 f-string；允許`logger.log_text(f"...")`但需注意安全性
 - [ ] **Network**: HTTP 請求未設定 `verify=False` (SSL Bypass)
 - [ ] **Network**: 針對使用者輸入的 URL 請求已做白名單檢查 (SSRF)
 - [ ] **Config**: 正式環境 `debug=False`；無 Hardcoded Secrets (密碼/Key)
-- [ ] **Validation**: 未將使用者輸入直接用於格式化字串 (Uncontrolled Format String)
-- [ ] **Header**: (Web專用) 已設定 CSP 與 HSTS 標頭
+- [ ] **Validation**: 寫入logger的字串除外，其餘未將使用者輸入直接用於格式化字串 (Uncontrolled Format String)
+- [ ] **Header**: 正確設定 Talisman HSTS 標頭（**僅 Flask 框架適用**；非 Flask 框架跳過此項）
+- [ ] **Header**: 正確設定 CSP ("default-src 'none'; frame-ancestors 'none'; form-action 'none'; base-uri 'none'")
 
 ### 6.3 BigQuery SQL Style Checklist
+
 - [ ] 確認為 Standard SQL（不是 Legacy）
-- [ ] 使用 SQL formatter（Tab size=4、Keywords=Upper、Indentation=Tabular, Right）
+- [ ] 使用 SQL formatter （BigQuery style）
 - [ ] 關鍵字大小寫、縮排、逗號位置一致
 - [ ] CTE 命名 `snake_case` 且結構清楚（從 raw/prepare → transform → final）
 - [ ] 最終輸出無 `SELECT *`；欄位清單明確
@@ -284,7 +305,7 @@ model: Grok Code Fast 1 (copilot)
 觸發關鍵字：`報表`, `report`, `dashboard`, `視覺化`
 
 - MUST：金額/金錢欄位必須 `CAST` 為 `FLOAT64`（當欄位語意明確為金額時）。
-- MUST：SQL 必須使用傳入的日期參數（例如 `@run_date`），不可使用 `CURRENT_DATE()` / `CURRENT_DATETIME()` 作為報表日期。
+- SHOULD：SQL 必須使用傳入的日期參數（例如 `@run_date`），不可使用 `CURRENT_DATE()` / `CURRENT_DATETIME()` 作為報表日期。
 - MUST：Task Number 必須寫在程式碼註解中（SQL 或 Python 入口皆可；禁止寫在 common.json）。
 - MUST：必須包含拆檔機制（Split mechanism）。
 - MUST：SQL 邏輯必須獨立為 `.sql` 檔案，不可嵌入 Python 長字串內。
@@ -295,18 +316,18 @@ model: Grok Code Fast 1 (copilot)
 
 - MUST：程式碼必須處理檔案分割（例如限制檔案大小或列數）。
 - MUST：金額欄位必須 `CAST` 為 `FLOAT64`（當欄位語意明確為金額時）。
-- MUST：SQL 必須使用傳入的日期參數，不可使用 `CURRENT_DATE()` / `CURRENT_DATETIME()`。
-- MUST：日期條件必須使用參數注入（不可用字串拼接）。
+- SHOULD：SQL 必須使用傳入的日期參數，不可使用 `CURRENT_DATE()` / `CURRENT_DATETIME()`。
+- SHOULD：日期條件必須使用參數注入（不可用字串拼接）。
 - MUST：SQL 語法必須獨立為 `.sql` 檔。
 
 ### 7.3 場景：資料載入 / ETL（Data Loading / ETL）
 
 觸發關鍵字：`{載入}`, `載入`, `load`, `etl`, `ingest`
 
-- MUST：當資料會被載入記憶體處理時，必須避免一次性全量載入：
-	- 若存在 `partition_date` → MUST 依日期分批處理。
-	- 若無分區 → MUST 使用 chunking（例如 `chunksize=10000` 或等效策略）以避免記憶體溢位（OOM）。
-- MUST：輸入參數必須包含 `start_date` 與 `end_date`（若流程語意為區間處理）。
+- SHOULD：當資料會被載入記憶體處理時，必須避免一次性全量載入：
+  - 若存在 `partition_date` → MUST 依日期分批處理。
+  - 若無分區 → MUST 使用 chunking（例如 `chunksize=10000` 或等效策略）以避免記憶體溢位（OOM）。
+- SHOULD：輸入參數必須包含 `start_date` 與 `end_date`（若流程語意為區間處理）。
 
 ---
 
@@ -317,3 +338,7 @@ model: Grok Code Fast 1 (copilot)
 - **僅**針對狀態為 **Fail❌（MUST 未滿足）** 的項目提供修正程式碼片段。
 - Warning⚠️ 與 Pass✅（含 MAY 未滿足）只提供建議，不貼大段重寫。
 - 修正程式碼片段必須以 unified diff 格式輸出，並包在 ```diff 區塊內。
+- 產生修正程式碼片段時，修正方向優先順序如下：
+  1. 若規則描述已有明確修正方式（含具體 API/寫法），必須優先依文件內容產生 diff。
+  2. 若規則描述僅提供方向但未給足細節，先遵循文件方向，再由 AI 補足必要細節。
+  3. 若規則描述未提供可落地修正方式，才可依官方參考標準（第 1 節）自行判斷。
