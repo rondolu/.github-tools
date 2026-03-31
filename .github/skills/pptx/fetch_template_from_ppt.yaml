@@ -1,0 +1,402 @@
+presentation_metadata:
+  風格: "清新白底、明亮現代、層次分明、系統化、極簡科技"
+  核心概念: "以純白為底，翠綠色（38B06A）作為主視覺強調色，鮮黃色（F5C518）作為次要強調色，多層灰階作為輔助色系；每頁透過固定裝飾語彙（頂部色條、底部三色條、左側強調線）統一視覺錨點，在明亮底色上建立清晰資訊層次，兼顧易讀性與品牌一致性。"
+  theme_concept: "Fresh Tech Minimal"
+  aspect_ratio: "16:9"
+  language: "繁體中文（含少量英文技術詞彙）"
+
+
+  design_system:
+    color_palette:
+      rule: >
+        以純白（FFFFFF）為全版背景，翠綠色（38B06A）作為核心強調色，用於數字標籤、
+        章節編號、互動元素、左側強調線。鮮黃色（F5C518）作為次要強調色，用於標記、
+        提示、CTA 輔助。灰色系（深灰 → 中灰 → 淺灰）作為卡片背景與輔助文字。
+        文字色彩依資訊重要程度分層：深炭灰（1A1A1A）→ 中炭灰（4A4A4A）→ 中灰（7A7A7A）→ 淺灰（AEAEAE）。
+        警示/錯誤訊息使用橙紅色（F75801），成功/確認使用主色翠綠（38B06A）。
+        底部永遠有三等份色條（深綠 → 中綠 → 淺綠/黃）作為頁腳識別。
+
+
+      primary_tones:
+        - name: "Pure White（主背景）"
+          hex: "FFFFFF"
+          usage: "全版背景色，所有頁面的全幅底色"
+        - name: "Brand Green（品牌主色）"
+          hex: "38B06A"
+          usage: "章節編號大字、頁碼標籤、重要 icon、左側強調線、CTA 色塊，全報唯一高亮主色"
+        - name: "Soft Green（主色淺版）"
+          hex: "D6F0E3"
+          usage: "卡片頂部色條、淺色標籤背景、hover 狀態底色"
+
+
+      neutral_tones:
+        - name: "Deep Charcoal（主文字）"
+          hex: "1A1A1A"
+          usage: "主標題文字、各區塊標題、重要標籤文字"
+        - name: "Dark Gray（次要文字）"
+          hex: "4A4A4A"
+          usage: "副標題、補充說明文字、封面副文"
+        - name: "Mid Gray（輔助文字）"
+          hex: "7A7A7A"
+          usage: "小節標語、說明文字強調、側欄輔助標題"
+        - name: "Light Gray（一般正文）"
+          hex: "9E9E9E"
+          usage: "卡片內正文、說明段落文字（淺色卡片上）"
+        - name: "Pale Gray（次要說明）"
+          hex: "BDBDBD"
+          usage: "限制說明、補充條件文字（低重要性資訊）"
+        - name: "Surface Gray（卡片背景）"
+          hex: "F5F5F5"
+          usage: "內容卡片底色、分區區塊背景（帶 5% 灰調的白）"
+        - name: "Card Gray（卡片邊界）"
+          hex: "E8E8E8"
+          usage: "卡片外框線、分隔線、細線裝飾"
+        - name: "Panel Gray（側欄背景）"
+          hex: "EFEFEF"
+          usage: "左側導航欄背景（比主背景略深）"
+
+
+      accent_tones:
+        - name: "Accent Yellow（次要強調）"
+          hex: "F5C518"
+          usage: "次要標籤、提示區塊、Rule 02 標題色、警示性規則標籤"
+        - name: "Yellow Light（黃色淺版）"
+          hex: "FEF7D0"
+          usage: "黃色 tag 背景、淺色高亮底"
+        - name: "Warning Orange（錯誤/警示）"
+          hex: "F75801"
+          usage: "錯誤示範文字、警告標示、不符合狀態標示"
+        - name: "Gray 30%（低透明灰）"
+          hex: "B0B0B0"
+          alpha: "30%"
+          usage: "裝飾性幾何形狀、點矩陣圖案（低調輔助裝飾）"
+        - name: "Gray 15%（極淡灰）"
+          hex: "D4D4D4"
+          alpha: "15%"
+          usage: "背景層次分區、卡片陰影替代色（無陰影設計，用淺灰色塊製造層次）"
+        - name: "Green Dark（深綠強調）"
+          hex: "217A4A"
+          usage: "第三層架構節點標題、強調連結文字、深色對比"
+        - name: "Green Mid（中綠）"
+          hex: "2E9459"
+          usage: "第二層節點標題、次要技術標籤"
+        - name: "Tip Gray（提示說明）"
+          hex: "8C8C8C"
+          usage: "提示說明文字（💡 後的輔助文）"
+
+
+      gradients: null
+      # 本簡報無漸層，全數使用純色填充
+
+
+      visual_effects:
+        - "左側垂直強調線：所有內容頁左側固定出現寬 5-8pt 的翠綠色（38B06A）矩形條，視覺上錨定左邊界"
+        - "卡片頂部色條：每個內容卡片頂部有 5-8pt 高的翠綠色（38B06A）或黃色（F5C518）矩形作為色標"
+        - "底部三色分隔條：每頁底部有三等份矩形（各寬 320pt、高 22pt），顏色由深到淺（38B06A → 2E9459 → D6F0E3）"
+        - "頂部超細線：每頁最頂端有 5pt 高的翠綠色（38B06A）色條分隔頁邊"
+        - "點陣裝飾：封面頁左側有 4×4 個 6pt 小方點排列成點矩陣圖案（裝飾性元素，灰色 30% 透明度）"
+        - "無陰影、無模糊、無毛玻璃——純粹色塊幾何設計語言"
+        - "卡片邊框：1pt 淺灰線（E8E8E8）取代深色卡片底，在白色背景上界定卡片範圍"
+
+
+    typography:
+      english_font: "Microsoft JhengHei（微軟正黑體，同時作為中英文主字型）"
+      chinese_font: "Microsoft JhengHei / 微軟正黑體（兩種名稱混用，指向同一字型）"
+
+
+      hierarchy:
+        slide_title:
+          size: "40pt"
+          weight: "Bold"
+          color: "1A1A1A"
+          note: "封面主標題，深炭灰色（白底上的高對比）"
+
+
+        section_header:
+          size: "28-32pt"
+          weight: "Bold"
+          color: "1A1A1A"
+          note: "各章節頁大標題"
+
+
+        subtitle:
+          size: "15-16pt"
+          weight: "Bold"
+          color: "38B06A"
+          note: "標題下方說明行，翠綠色，呼應主色"
+
+
+        body_text:
+          size: "14-16pt"
+          weight: "Bold"
+          line_height: "1.4（推估）"
+          color: "4A4A4A"
+          note: "主要段落說明文，深灰色；淺色卡片（F5F5F5）內用 4A4A4A"
+
+
+        annotation:
+          size: "14pt"
+          weight: "Bold"
+          color: "9E9E9E"
+          note: "次要限制說明、補充條件，中灰色低調處理"
+
+
+        kpi_value:
+          size: "52pt"
+          weight: "Bold"
+          color: "38B06A"
+          note: "Agenda 頁的 01/02/03/04 大型章節編號；也作各頁左上角 40pt 頁碼標籤"
+
+
+      special_styles:
+        - "頁碼標籤（40pt Bold 38B06A）：每頁左上角固定有 80×70pt 文字框顯示兩位數章節碼（01-04）"
+        - "Step 標籤（14pt Bold FFFFFF）：比較表格左側的 'Step 1/2/3' 標籤，置中於 66×62pt 翠綠色方塊"
+        - "Rule 標籤（22pt Bold，色彩各異）：規則頁的 Rule 01/02/03，顏色分別為 38B06A / F5C518 / F75801"
+        - "技術路徑文字（20pt Bold，多層深度色彩）：38B06A → 2E9459 → 217A4A 三層深度"
+        - "警示/確認標記（emoji + 文字混排）：使用 ❌ ✅ 💡 表情符號輔助視覺分類"
+
+
+    layout_rules:
+      slide_size:
+        width_inches: 10.0
+        height_inches: 5.625
+        # 960pt × 540pt（標準 16:9 Widescreen）
+
+
+      margins:
+        top: "0.04 inches（5pt）"
+        bottom: "0.23 inches（22pt，底部色條佔用）"
+        left: "0.08 inches（使用左側 5-8pt 強調線後，內容從約 30pt 開始）"
+        right: "0.0 inches（無明確右側邊距）"
+        content_left_start: "約 0.31 inches（30pt）內容實際起始"
+        content_right_end: "約 9.85 inches（945pt）"
+
+
+      whitespace: "功能性留白——白底設計需要更多呼吸空間；以卡片邊界（E8E8E8 細線）和行間距製造層次，而非深色色塊切割"
+
+
+      grid_system: >
+        二欄式分區邏輯（側欄 + 主內容）為主：
+        左側欄 0-310pt（寬約 32%，底色 EFEFEF），主內容區 318-960pt（寬約 68%，底色 FFFFFF）。
+        內容頁也使用「水平行分區」：將主內容分成 2-3 個等高橫條，每條約 120pt 高。
+        比較頁用左右對稱分割（各 ~466pt）。
+        底部色條三等份（各 320pt），左/中/右嚴格對齊。
+
+
+      ui_elements:
+        container_style: "卡片型——以 F5F5F5 淺灰矩形＋1pt E8E8E8 邊框作為卡片容器，無圓角（主要），偶爾用圓角矩形（約 4-6pt）"
+        corner_radius: "大部分為直角（0px）；規則卡片使用輕微圓角（約 4-6pt）"
+        shadow: "無陰影，以淺灰底色（F5F5F5）和細線框（E8E8E8）製造卡片層次"
+        dividers: "1pt 淺灰線（E8E8E8）作為區塊分隔，卡片頂部以 5-8pt 翠綠/黃色條作視覺分區"
+
+
+      recurring_elements:
+        - element: "頂部超細色條"
+          position: "每頁最頂端，x=0 y=0"
+          style: "寬 960pt、高 5pt，填色為翠綠（38B06A）"
+
+
+        - element: "底部三等份色條"
+          position: "每頁底部，y=518pt"
+          style: >
+            三個各 320pt 寬、22pt 高的矩形並排（left=0/320/640），
+            填色由左至右：38B06A（深翠綠）/ 2E9459（中綠）/ D6F0E3（淺薄荷綠）
+
+
+        - element: "左側垂直強調線"
+          position: "各內容頁左側，x=0 y=5，高 513pt"
+          style: "寬 5-8pt 矩形，填色為翠綠（38B06A），作為左邊界視覺錨"
+
+
+        - element: "頁碼/章節標籤（大數字）"
+          position: "各頁左上角或左側欄上方，約 x=4-26 y=14-20"
+          style: "80×70pt 文字框，40pt Bold，色碼 38B06A，顯示 01/02/03/04"
+
+
+        - element: "左側欄背景色塊（部分頁面）"
+          position: "x=0 y=5，寬 310-320pt，高 513pt"
+          style: "淺灰色矩形（EFEFEF），作為導航/說明側欄底色（取代原深藍側欄）"
+
+
+        - element: "內容區橫向分隔線"
+          position: "各橫條內容區塊之間"
+          style: "1pt 高矩形，填色 E8E8E8（淺灰），與卡片頂部翠綠色條配合使用"
+
+
+  slide_templates:
+    - type: "Cover / Title Slide"
+      background: "純色 FFFFFF 全版"
+      layout_description: >
+        左側佔 1/3 為淺灰側欄（EFEFEF，含點矩陣裝飾），右側 2/3 為主內容區（純白）。
+        左上角有 4×4 點陣圖案（6pt 小方點，灰色 30% 透明度裝飾）。
+        左側欄底部有細橫線分隔（E8E8E8）。
+        右側內容垂直置中偏上：主標題（1A1A1A）、翠綠分隔線條、副標題（4A4A4A）、作者/日期。
+        最底部三色條橫跨全幅（頁腳：深綠 → 中綠 → 薄荷淺綠）。
+      color_mapping:
+        background: "FFFFFF"
+        left_panel: "EFEFEF"
+        left_accent_line: "38B06A"
+        dot_matrix: "B0B0B0（30%透明）"
+        title: "1A1A1A"
+        title_underline: "38B06A"
+        subtitle: "4A4A4A"
+        author_date: "7A7A7A"
+        bottom_bar: ["38B06A", "2E9459", "D6F0E3"]
+
+
+    - type: "Agenda / Table of Contents"
+      background: "純色 FFFFFF 全版"
+      layout_description: >
+        左側窄欄（寬 220pt，EFEFEF 底）放章節標題大字 "Agenda"（1A1A1A，36pt）。
+        右側主區域排列 2×2 的 KPI 卡片格（F5F5F5 底，E8E8E8 邊框）。
+        每張卡片：頂部有 6pt 翠綠色條、大型數字（52pt 翠綠）、卡片標題（18pt 1A1A1A）、底部 8pt 線條。
+      color_mapping:
+        background: "FFFFFF"
+        left_panel: "EFEFEF"
+        agenda_title: "1A1A1A"
+        card_bg: "F5F5F5"
+        card_border: "E8E8E8"
+        card_top_bar: "38B06A"
+        card_number: "38B06A"
+        card_label: "1A1A1A"
+        card_bottom_bar: "38B06A"
+
+
+    - type: "Content - Horizontal Row（橫條三列）"
+      background: "純色 FFFFFF（帶左側 6pt 翠綠強調線）"
+      color_mapping:
+        background: "FFFFFF"
+        left_accent_line: "38B06A"
+        section_number: "38B06A"
+        page_title: "1A1A1A"
+        subtitle_tagline: "38B06A"
+        row_container_bg: "F5F5F5"
+        row_container_border: "E8E8E8"
+        row_left_accent: "38B06A"
+        row_title: "1A1A1A"
+        row_body: "4A4A4A"
+        row_divider: "E8E8E8"
+
+
+    - type: "Content - Left Panel + Right Multi-Section（側欄＋右側多區塊）"
+      background: "純色 FFFFFF"
+      color_mapping:
+        background: "FFFFFF"
+        left_panel_bg: "EFEFEF"
+        left_accent_line: "38B06A"
+        left_section_number: "38B06A"
+        left_title: "1A1A1A"
+        left_subtitle: "38B06A"
+        right_section_bg: "F5F5F5"
+        right_section_border: "E8E8E8"
+        right_section_accent: "38B06A"
+        right_section_title: ["38B06A", "2E9459", "217A4A"]
+        right_section_body: "4A4A4A"
+        flow_arrow: "38B06A"
+
+
+    - type: "Content - Section Divider（章節過渡頁）"
+      background: "純色 FFFFFF（帶頂部翠綠 header 色條）"
+      color_mapping:
+        background: "FFFFFF"
+        top_header_bar: "F5F5F5"
+        top_accent_line: "38B06A"
+        left_accent_line: "38B06A"
+        subtitle_tagline: "38B06A"
+
+
+    - type: "Content - Comparison Table（比較/評分表）"
+      background: "純色 FFFFFF"
+      color_mapping:
+        background: "FFFFFF"
+        header_bar: "F5F5F5"
+        header_border: "E8E8E8"
+        header_title: "1A1A1A"
+        header_subtitle: "38B06A"
+        left_column_bg: "F5F5F5"
+        left_column_border: "E8E8E8"
+        column_accent: "F75801"
+        step_label_bg: "38B06A"
+        step_label_text: "FFFFFF"
+        step_content_bg: "F5F5F5"
+        step_content_text: "4A4A4A"
+        center_separator: "BDBDBD"
+        footer_note_left: "F75801"
+        footer_note_right: "38B06A"
+
+
+    - type: "Content - Flow Diagram（流程圖/決策樹）"
+      background: "純色 FFFFFF"
+      color_mapping:
+        background: "FFFFFF"
+        header_bar: "F5F5F5"
+        header_title: "1A1A1A"
+        flow_center_axis: "38B06A"
+        step_circle_bg: "38B06A"
+        step_circle_text: "FFFFFF"
+        step_line: "E8E8E8"
+        step_content_bg: "F5F5F5"
+
+
+    - type: "Content - Three-Card Comparison（三欄卡片比較）"
+      background: "純色 FFFFFF"
+      color_mapping:
+        background: "FFFFFF"
+        header_bar: "F5F5F5"
+        header_title: "1A1A1A"
+        card_bg: "F5F5F5"
+        card_border: "E8E8E8"
+        card_top_accent: ["38B06A", "F5C518", "F75801"]
+        card_rule_label: ["38B06A", "F5C518", "F75801"]
+        card_rule_name: "1A1A1A"
+        card_rule_subtitle: ["38B06A", "F5C518", "F75801"]
+        card_forbidden_bg: "EFEFEF"
+        card_forbidden_accent: ["38B06A", "F5C518", "F75801"]
+        card_tip_bg: "FEF7D0"
+        card_tip_text: "8C8C8C"
+
+
+    - type: "Closing / Thank You"
+      background: "純色 FFFFFF（帶左側 8pt 翠綠強調線）"
+      color_mapping:
+        background: "FFFFFF"
+        left_accent: "38B06A"
+        logo_title: "1A1A1A"
+        divider: "E8E8E8"
+        row_bg: "F5F5F5"
+        row_icon_bg: "D6F0E3"
+        row_title: "1A1A1A"
+        row_body: "4A4A4A"
+        social_links: "38B06A"
+                              
+
+  instructions_for_generation:
+    - "Tone: 清新極簡科技風，明亮且具現代感。使用純白作為主基調，翠綠色作為視覺焦點；整體應傳達「清晰、高效、可執行」的信息，避免深色或沉重感。"
+
+    - "Color discipline: 嚴格控制用色。主強調色只有一個（38B06A 翠綠）；次要強調色為 F5C518（鮮黃）；警示用 F75801；說明文字用灰色階（4A4A4A / 7A7A7A / 9E9E9E）；不得自行引入其他顏色。"
+
+    - "Background rule: 全報背景一律使用純白（FFFFFF）。所有深色背景頁面（原 0B1826 / 0E2040）均替換為白色，深色文字（1A1A1A）取代原白色文字。"
+
+    - "Typography: 全報使用微軟正黑體（Microsoft JhengHei / 微軟正黑體）。中英文混排不換字型。不使用任何襯線字體。所有文字均設為 Bold。"
+
+    - "Font size hierarchy（必須遵守）: 大數字/KPI 52pt → 封面主標題 40pt → 頁碼標籤 40pt → 章節標題 28-32pt → 卡片標題 20-24pt → 頁標題/列標題 16-20pt → 正文 14-16pt → 最小不低於 14pt。"
+
+    - "Recurring decorators（每頁必須包含）: ① 頂部 5pt 翠綠色條（38B06A） ② 底部三等份色條（y=518, h=22，三份各 320pt 寬，色彩 38B06A / 2E9459 / D6F0E3） ③ 左側垂直 5-8pt 翠綠強調線 ④ 左上角兩位數章節編號（40pt 38B06A）。"
+
+    - "Card style（白底特別規則）: 白底環境下，卡片必須用 F5F5F5 淺灰底 + 1pt E8E8E8 邊框界定範圍，禁止用純白卡片（與背景無法區分）。卡片頂部色條維持翠綠或黃色，5-8pt 高。"
+
+    - "Left panel: 左側欄底色改為 EFEFEF（淺灰），取代原深藍（0E2040）。文字改為深炭灰（1A1A1A），強調文字用翠綠（38B06A）。"
+
+    - "Charts: 本簡報無傳統統計圖表。數據以卡片式 KPI 大數字（38B06A）、條列式行區塊、結構化表格呈現。若需加入圖表，使用白底 + 翠綠系列色，搭配淺灰輔助色。"
+
+    - "Icons: 使用幾何形狀模擬（矩形/圓角矩形，翠綠或黃色填色）加文字/emoji。偶爾使用 ❌ ✅ 💡 ▼ 等 Unicode 符號。避免引入第三方圖示庫風格。"
+
+    - "Layout logic: 優先使用「左側淺灰欄（EFEFEF）+ 右側白色主內容」或「全幅橫條列表（F5F5F5卡片）」結構。所有色塊無漸層、無陰影；以淺灰底（F5F5F5）+ 細線（E8E8E8）製造卡片層次。"
+
+    - "Forbidden elements: ① 深色（0B1826 等深藍/深色）背景 ② 漸層填色 ③ 任何形式的陰影或毛玻璃 ④ 圓角超過 6pt ⑤ 彩色插圖或 Clipart ⑥ 頁面設計語言不一致的字型 ⑦ 低於 14pt 的文字 ⑧ Regular 或 Light 字重 ⑨ 超過本規格書定義的配色範圍 ⑩ 白色卡片放白色背景上（無法區分）。"
+
+    - "Text color rules: 白色背景上主文一律 1A1A1A（深炭灰）；次文用 4A4A4A；輔助說明用 7A7A7A 或 9E9E9E。強調文字用 38B06A（翠綠）或 F5C518（黃）。切勿在白色底上用白色文字。"
+
+    - "Gray opacity system（六角形衍生的輔助色規則）: 裝飾性幾何元素使用灰色加透明度——30% 灰用於點矩陣裝飾、15% 灰用於背景分區底紋、50% 灰用於次要分隔線。此系統源自原始六角形圖形的多層次灰色透明度設計語彙。"
+
+    - "Spacing convention: 橫條行高約 120pt；卡片頂部色條 5-8pt；卡片間留白約 8-16pt；頁面左邊距約 30pt（強調線後），頂部起始約 20-30pt（頂部細線後）。白底設計需適度增加留白，建議橫條間距加大 20%（約 144pt）以維持清新感。"

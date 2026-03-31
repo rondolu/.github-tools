@@ -1,0 +1,140 @@
+presentation_metadata:
+  風格: "清新通透、明亮現代、呼吸感排版、數據專業、極簡科技"
+  核心概念: "以純白為底，翠綠色（38B06A）作為主視覺強調色。捨棄厚重實體色塊，導入低透明度與微毛玻璃效果創造穿透感。透過字重對比（粗/細）與擴大的留白建立資訊層次。頁腳改為極簡進度線，並全面採用專業線性圖標，打造高級的技術視覺語言。"
+  theme_concept: "Lucid Tech Minimal"
+  aspect_ratio: "16:9"
+  language: "繁體中文（含少量英文技術詞彙）"
+
+  design_system:
+    color_palette:
+      rule: >
+        以純白（FFFFFF）為全版背景，翠綠色（38B06A）作為核心強調色。
+        文字色彩依資訊重要程度分層：深炭灰（1A1A1A）→ 中炭灰（4A4A4A）→ 中灰（7A7A7A）。
+        卡片與底色運用低透明度（Alpha 5%-10%）取代實色，並結合微弱陰影創造空間感。
+        底部去除厚重三色條，改為 2-4pt 的極細淺灰進度線配翠綠高亮。
+
+      primary_tones:
+        - name: "Pure White（主背景）"
+          hex: "FFFFFF"
+          usage: "全版背景色"
+        - name: "Brand Green（品牌主色）"
+          hex: "38B06A"
+          usage: "章節編號大字、重要線條圖標、進度高亮、關鍵字強調"
+        - name: "Soft Green Glass（主色透亮版）"
+          hex: "38B06A"
+          alpha: "8%"
+          usage: "卡片頂部色條、淺色標籤背景、hover 狀態底色（帶穿透感）"
+
+      neutral_tones:
+        - name: "Deep Charcoal（主標/重要數據）"
+          hex: "1A1A1A"
+          usage: "主標題文字、大數字 KPI"
+        - name: "Dark Gray（正文）"
+          hex: "4A4A4A"
+          usage: "主要段落說明文"
+        - name: "Mid Gray（輔助說明）"
+          hex: "7A7A7A"
+          usage: "補充說明文字、底部進度線底色"
+        - name: "Surface Glass（通透卡片背景）"
+          hex: "FFFFFF"
+          alpha: "60%"
+          backdrop_blur: "12px"
+          usage: "內容卡片底色（結合微陰影取代實體框線）"
+
+      accent_tones:
+        - name: "Accent Yellow（次要強調）"
+          hex: "F5C518"
+          usage: "次要標籤、重點提示區塊"
+        - name: "Warning Orange（錯誤/警示）"
+          hex: "F75801"
+          usage: "異常狀態標示、中斷連線圖示"
+
+      visual_effects:
+        - "通透卡片層次：捨棄 1pt 實體灰色邊框，改用純白 60% 透明度結合 12px 背景模糊（Background Blur），搭配極柔和陰影（Y:4, Blur:16, Alpha:4%）"
+        - "左側呼吸線：將原本的 5-8pt 粗線改為 2pt 的翠綠色極細線，讓視覺錨點更精緻"
+        - "極簡頁腳進度：捨棄 22pt 粗色塊，改為頁面底部 2pt 淺灰細線，依當前章節進度亮起翠綠色段落"
+        - "頂部留白：移除頂部 5pt 粗色帶，讓畫面的頂端有完全舒展的空間"
+
+    typography:
+      english_font: "Microsoft JhengHei"
+      chinese_font: "Microsoft JhengHei"
+
+      hierarchy:
+        slide_title:
+          size: "40pt"
+          weight: "Bold"
+          color: "1A1A1A"
+        section_header:
+          size: "28-32pt"
+          weight: "Bold"
+          color: "1A1A1A"
+        subtitle:
+          size: "15-16pt"
+          weight: "Regular"
+          color: "38B06A"
+        body_text:
+          size: "14-16pt"
+          weight: "Regular"
+          line_height: "1.6"
+          color: "4A4A4A"
+          note: "全數改為 Regular 字重，並提升行距至 1.6 倍以增加呼吸感"
+        annotation:
+          size: "14pt"
+          weight: "Light"
+          color: "7A7A7A"
+        kpi_value:
+          size: "52pt"
+          weight: "Bold"
+          color: "38B06A"
+
+    iconography_system:
+      style: "專業線性向量圖標 (Line Vector Icons)，統一 1.5px 粗細 (如 Phosphor 或 Lucide 風格)"
+      replacement_rules:
+        - old: "💡"
+          new: "Node Network (節點網路) 或 Terminal Prompt (終端機指令)"
+          color: "38B06A"
+        - old: "✅"
+          new: "Data Pipeline (順暢資料流) 或 Check Circle (細線圓圈勾選)"
+          color: "38B06A"
+        - old: "❌"
+          new: "Broken Link (中斷連線) 或 Hexagon Warning (六角形警示)"
+          color: "F75801"
+
+    layout_rules:
+      slide_size:
+        width_inches: 10.0
+        height_inches: 5.625
+
+      margins:
+        top: "0.2 inches (大幅增加頂部留白)"
+        bottom: "0.1 inches (配合極簡底線)"
+        left: "0.3 inches (不再被厚重側欄擠壓)"
+        right: "0.3 inches"
+
+      whitespace: "擴大卡片與卡片間距至 24-32pt，利用對齊與空間來劃分區塊，減少實體分隔線的使用"
+
+      ui_elements:
+        container_style: "微毛玻璃卡片（純白 60%透明 + 模糊），邊緣搭配 0.5px 10% 白色的極細內光暈增加立體感"
+        corner_radius: "微圓角 8pt"
+        shadow: "Drop Shadow (Y: 4, Blur: 16, Color: 1A1A1A, Alpha: 4%)"
+        dividers: "改用 8% 翠綠色透明線條，或直接用 32pt 的留白取代"
+
+      recurring_elements:
+        - element: "極簡頁腳進度線"
+          position: "每頁底部，y=536pt"
+          style: "高 2pt 的淺灰細線，配合當前簡報章節，將對應區段填滿為翠綠色（38B06A）"
+        - element: "左側垂直引導細線"
+          position: "各內容頁左側，x=10 y=20"
+          style: "寬 2pt，高 500pt 的 8% 翠綠色透明線，當前焦點區塊則加深為 100% 翠綠色"
+        - element: "頁碼標籤"
+          position: "左下角或右上角 (遠離主視覺中心)"
+          style: "14pt Regular，色碼 7A7A7A"
+
+  instructions_for_generation:
+    - "Tone: 專業數據團隊的現代科技風。高對比度、高穿透感、呼吸感強烈。"
+    - "Background rule: 保持純白背景，但內容區塊透過柔和的毛玻璃（Glassmorphism）與微陰影浮起，打破扁平死板。"
+    - "Typography weight: 嚴禁全篇 Bold。標題與 KPI 數字使用 Bold，正文必須使用 Regular，註解使用 Light，透過字重差異建立清晰的閱讀層次。"
+    - "Spacing convention: 卡片與橫條間距加大至 24-32pt 以上，行高設為 1.6。留白是本簡報最高級的設計語言。"
+    - "Iconography: 嚴禁使用罐頭 Emoji (❌✅💡)。一律使用代表資料工程/AI Agent 概念的細線向量圖標 (如 Node, Pipeline, Terminal)。"
+    - "Footer logic: 不再使用佔用 22pt 空間的三等份色塊，改為極細 (2pt) 的進度指示線。"
+    - "Layout philosophy: 移除笨重的淺灰側欄，讓內容以置中或對齊網格的方式自由延伸。不需要硬性填滿版面。"

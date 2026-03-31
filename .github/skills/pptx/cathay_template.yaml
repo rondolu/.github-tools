@@ -1,0 +1,142 @@
+presentation_metadata:
+  風格: "俐落知性 / 數位賦能 / 留白美學"
+  核心概念: "Cathay corporate design — 專業冷靜的企業風格，以深藍為主軸，白色為背景主色，注重留白與網格對齊，傳遞可信賴的現代金融科技感。"
+  theme_concept: "Digital Empowerment & Minimalist Trust"
+  aspect_ratio: "16:9"
+  language: "Traditional Chinese (Taiwan)"
+
+  design_system:
+    color_palette:
+      rule: "60-30-10 Rule — Primary 60% / Neutral 30% / Accent 10%"
+
+      primary_tones:
+        - name: "Cathay Dark Blue"
+          hex: "0843AD"
+          usage: "Backgrounds, headers, main charts — 60% primary weight"
+        - name: "Tech Blue"
+          hex: "186AFF"
+          usage: "Interactive elements, secondary highlights under primary"
+        - name: "Data Teal"
+          hex: "36CBDA"
+          usage: "Data visualization, success state, third-level accents"
+
+      neutral_tones:
+        - name: "Text Black"
+          hex: "262626"
+          usage: "Body text, borders — 30% neutral weight"
+        - name: "Subtitle Gray"
+          hex: "A5A5A5"
+          usage: "Annotations, secondary text, captions"
+        - name: "Canvas White"
+          hex: "FFFFFF"
+          usage: "Slide backgrounds — primary canvas color"
+        - name: "Section Gray"
+          hex: "F2F2F2"
+          usage: "Section separators, card fills on light backgrounds"
+
+      accent_tones:
+        - name: "Energy Yellow"
+          hex: "FFD600"
+          usage: "Highlights, KPI callouts — 10% accent weight"
+        - name: "Action Orange"
+          hex: "F75801"
+          usage: "Call-to-actions, important dots and lines"
+        - name: "Light Blue (gradient start)"
+          hex: "B2D9FC"
+          usage: "Gradient start tone, light background accent"
+        - name: "Soft Teal (gradient start)"
+          hex: "CDF2F6"
+          usage: "Teal gradient start tone"
+        - name: "Mid Teal"
+          hex: "82DFE8"
+          usage: "Teal gradient mid tone"
+
+      gradients:
+        - name: "Blue Gradient"
+          from: "B2D9FC"
+          via: "186AFF"
+          to: "0843AD"
+          direction: "Top-Left to Bottom-Right"
+        - name: "Teal Gradient"
+          from: "CDF2F6"
+          via: "82DFE8"
+          to: "36CBDA"
+          direction: "Top-Left to Bottom-Right"
+
+    typography:
+      english_font: "Arial"
+      chinese_font: "Microsoft JhengHei (微軟正黑體)"
+
+      hierarchy:
+        slide_title:
+          size: "30pt"
+          weight: "Bold"
+          color: "0843AD"
+          note: "Cathay Dark Blue slide titles"
+
+        section_header:
+          size: "28pt"
+          weight: "Bold"
+          color: "262626"
+          note: "Section and chapter headings"
+
+        subtitle:
+          size: "22pt"
+          weight: "Regular"
+          color: "186AFF"
+          note: "Subtitle line under slide title"
+
+        body_text:
+          size: "14pt"
+          weight: "Regular"
+          color: "262626"
+          line_height: 1.5
+          note: "Primary body paragraph text"
+
+        annotation:
+          size: "12pt"
+          weight: "Regular"
+          color: "A5A5A5"
+          note: "Footnotes, captions, supplementary text"
+
+        kpi_value:
+          size: "40pt+"
+          weight: "Bold"
+          color: "0843AD"
+          note: "Large KPI numbers, accented with orange line or dot"
+
+    layout_rules:
+      slide_size:
+        width_inches: 10.0
+        height_inches: 5.625
+        note: "Standard LAYOUT_16x9"
+
+      whitespace:
+        minimum_empty_area: "30%"
+        note: "Minimum 30% of slide area MUST be empty — core aesthetic principle"
+
+      grid_system: "12-column modular grid for charts and content blocks"
+
+      visual_style:
+        - "Use rounded corners for images and content blocks (simulating App UI)"
+        - "Avoid heavy borders — use whitespace or light gray fills (#F2F2F2) to separate sections"
+        - "Icons should be outlined (stroke style) in Dark Blue or Gray"
+        - "Background is white or very light — opposite of dark-theme templates"
+
+      recurring_elements:
+        - element: "Slide background"
+          style: "Canvas White FFFFFF or Section Gray F2F2F2"
+        - element: "Header accent"
+          style: "Cathay Dark Blue 0843AD bar or shape at top of content area"
+        - element: "KPI accent line/dot"
+          style: "Action Orange F75801 horizontal line or dot accent under KPI numbers"
+
+  instructions_for_generation:
+    - "Tone: Professional, corporate yet innovative. Convey trustworthiness and digital empowerment."
+    - "Background: White (FFFFFF) or light gray (F2F2F2) — NEVER dark backgrounds."
+    - "Whitespace: High — minimum 30% empty area. Breathability is part of the brand identity."
+    - "Charts: Flat design, clean. Bar charts use Tech Blue (186AFF) for current data, Light Blue (B2D9FC) for historical. KPI highlights use 40pt+ Dark Blue with Orange accent."
+    - "Imagery: High-quality, representing Connectivity, Scale, and Future. Abstract tech imagery or Blue gradient backgrounds preferred."
+    - "Forbidden: Serif fonts. Generic low-effort layouts. Dark slide backgrounds. Rounded corners exceeding App UI standards."
+    - "Typography: No mixing of Chinese and English fonts within the same run — Arial for English, Microsoft JhengHei for Chinese."
+    - "Gradients: Use the defined Blue or Teal gradients only. Do not introduce custom gradients."

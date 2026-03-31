@@ -1,0 +1,827 @@
+presentation_metadata:
+  風格: "科技感深色、層次分明、資訊密集、系統化、現代極簡"
+  核心概念: "以深海藍為基底，用電光藍作為主視覺強調色，建立清晰的資訊層次；每頁透過固定裝飾語彙（頂部色塊、底部三色條、左側強調線）統一視覺錨點，讓技術型內容兼顧易讀性與品牌一致性。"
+  theme_concept: "Deep Tech Blueprint"
+  aspect_ratio: "16:9"
+  language: "繁體中文（含少量英文技術詞彙）"
+
+  design_system:
+    color_palette:
+      rule: >
+        以深藍色系為主體背景，電光藍（186AFF）作為核心強調色，用於數字標籤、
+        章節編號、互動元素。左側欄（側邊欄）統一使用深藍色塊，右側主內容區使
+        用稍淺的深藍做對比層次。文字色彩依資訊重要程度分層：純白→淺藍灰→中
+        灰→深灰。警示/錯誤訊息使用橙紅色（F75801），成功/確認使用青藍色（36CBDA）。
+        底部永遠有三等份色條（深→中→淺藍）作為頁腳識別。
+
+      primary_tones:
+        - name: "Deep Navy（主背景）"
+          hex: "0B1826"
+          usage: "全版背景色，大部分內容頁的全幅底色"
+        - name: "Brand Electric Blue（品牌強調）"
+          hex: "186AFF"
+          usage: "章節編號大字、頁碼標籤、重要 icon、主 CTA 色塊，全報唯一高亮強調色"
+        - name: "Section Navy（側欄/卡片背景）"
+          hex: "0E2040"
+          usage: "左側導航欄背景、內容卡片底色、分區區塊背景"
+
+      neutral_tones:
+        - name: "Pure White"
+          hex: "FFFFFF"
+          usage: "主標題文字、各區塊標題、重要標籤文字"
+        - name: "Ice Blue（次要文字）"
+          hex: "B2D9FC"
+          usage: "副標題、補充說明文字、封面副文"
+        - name: "Mist Blue（輔助文字）"
+          hex: "82DFE8"
+          usage: "小節標語、說明文字強調、側欄輔助標題"
+        - name: "Slate（一般正文）"
+          hex: "333333"
+          usage: "卡片內正文、說明段落文字（淺色卡片上）"
+        - name: "Mid Gray（次要說明）"
+          hex: "8AABCC"
+          usage: "限制說明、補充條件文字（低重要性資訊）"
+        - name: "Dark Charcoal"
+          hex: "262626"
+          usage: "淺色卡片內中等重要性正文（對比深色卡底）"
+
+      accent_tones:
+        - name: "Cyan Success（確認/成功）"
+          hex: "36CBDA"
+          usage: "成功狀態標示、流程圖「符合」箭頭、二級規則標題（Rule 02）"
+        - name: "Warning Orange（錯誤/警示）"
+          hex: "F75801"
+          usage: "錯誤示範文字、警告標示、不符合狀態標示"
+        - name: "Gold Alert（注意/第三規則）"
+          hex: "FFD600"
+          usage: "Rule 03 標題色、特殊警示規則標籤"
+        - name: "Sky Blue（連結/路徑）"
+          hex: "0843AD"
+          usage: "第三層架構節點標題、強調連結文字、深藍強調"
+        - name: "Link Blue（參考提示）"
+          hex: "67ADF3"
+          usage: "YAML 片段標題文字、次要技術標籤"
+        - name: "Soft Link"
+          hex: "6A8BA8"
+          usage: "提示說明文字（💡 後的輔助文）"
+
+      gradients: null
+      # 本簡報無漸層，全數使用純色填充
+
+      visual_effects:
+        - "左側垂直強調線：所有內容頁左側固定出現寬 5-8pt 的電光藍/深藍色矩形條，視覺上錨定左邊界"
+        - "卡片頂部色條：每個內容卡片頂部有 5-8pt 高的強調色矩形作為色標（藍色系）"
+        - "底部三色分隔條：每頁底部有三等份矩形（各寬 320pt、高 22pt），顏色由深到淺形成頁腳條"
+        - "頂部超細線：每頁最頂端有 5pt 高的色條分隔頁邊"
+        - "點陣裝飾：封面頁左側有 4×4 個 6pt 小方點排列成點矩陣圖案（裝飾性元素）"
+        - "無陰影、無模糊、無毛玻璃——純粹色塊幾何設計語言"
+
+    typography:
+      english_font: "Microsoft JhengHei（微軟正黑體，同時作為中英文主字型）"
+      chinese_font: "Microsoft JhengHei / 微軟正黑體（兩種名稱混用，指向同一字型）"
+      # 注意：theme1.xml 無法直接讀取，字型由各形狀 textRange.font.name 推斷
+
+      hierarchy:
+        slide_title:
+          size: "40pt"
+          weight: "Bold"
+          color: "FFFFFF"
+          note: "封面主標題，如 'Agent Skills 實作與應用'"
+
+        section_header:
+          size: "28-32pt"
+          weight: "Bold"
+          color: "FFFFFF"
+          note: "各章節頁大標題，如 '痛點回顧'、'Skills怎麼運作？'"
+
+        subtitle:
+          size: "15-16pt"
+          weight: "Bold"
+          color: "82DFE8"
+          note: "標題下方說明行，薄荷藍色，如 '為什麼模型很聰明，但還是常常出錯？'"
+
+        body_text:
+          size: "14-16pt"
+          weight: "Bold"
+          line_height: "1.4（推估）"
+          color: "B2D9FC"
+          note: "主要段落說明文，淺冰藍色；深色卡片內用 B2D9FC，淺色卡片內用 333333/262626"
+
+        annotation:
+          size: "14pt"
+          weight: "Bold"
+          color: "8AABCC"
+          note: "次要限制說明、補充條件，灰藍色低調處理"
+
+        kpi_value:
+          size: "52pt"
+          weight: "Bold"
+          color: "186AFF"
+          note: "Agenda 頁的 01/02/03/04 大型章節編號；也作各頁左上角 40pt 頁碼標籤"
+
+      special_styles:
+        - "頁碼標籤（40pt Bold 186AFF）：每頁左上角固定有 80×70pt 文字框顯示兩位數章節碼（01-04）"
+        - "Step 標籤（14pt Bold FFFFFF）：比較表格左側的 'Step 1/2/3' 標籤，置中於 66×62pt 深藍色方塊"
+        - "Rule 標籤（22pt Bold，色彩各異）：開發地雷頁的 Rule 01/02/03，顏色分別為 186AFF / 36CBDA / FFD600"
+        - "技術路徑文字（20pt Bold，多層深藍漸進）：架構圖中 67ADF3 → 0E50CC → 052880 三層深度色彩"
+        - "警示/確認標記（emoji + 文字混排）：使用 ❌ ✅ 💡 表情符號輔助視覺分類"
+
+    layout_rules:
+      slide_size:
+        width_inches: 10.0
+        height_inches: 5.625
+        # 960pt × 540pt（推算自形狀座標，標準 16:9 Widescreen）
+
+      margins:
+        top: "0.04 inches（5pt）"
+        bottom: "0.23 inches（22pt，底部色條佔用）"
+        left: "0.08 inches（使用左側 5-8pt 強調線後，內容從約 30pt 開始）"
+        right: "0.0 inches（無明確右側邊距）"
+        content_left_start: "約 0.31 inches（30pt）內容實際起始"
+        content_right_end: "約 9.85 inches（945pt）"
+
+      whitespace: "功能性留白——不追求高留白比例，優先填滿有效資訊；以色塊邊界和行間距製造呼吸感，而非留白"
+
+      grid_system: >
+        二欄式分區邏輯（側欄 + 主內容）為主：
+        左側欄 0-310pt（寬約 32%），主內容區 318-960pt（寬約 68%）。
+        內容頁也使用「水平行分區」：將主內容分成 2-3 個等高橫條，每條約 120pt 高。
+        比較頁用左右對稱分割（各 ~466pt）。
+        底部色條三等份（各 320pt），左/中/右嚴格對齊。
+
+      ui_elements:
+        container_style: "區塊型——以實色矩形作為卡片容器，無圓角（主要），偶爾用圓角矩形（Rounded Rectangle）"
+        corner_radius: "大部分為直角（0px）；開發地雷頁的規則卡片使用輕微圓角（約 4-6pt）"
+        shadow: "無陰影，所有元素零陰影設計"
+        dividers: "細橫線（2-4pt 高矩形，與背景形成對比）作為區塊分隔，同時使用頂部色條作視覺分區"
+
+      recurring_elements:
+        - element: "頂部超細色條"
+          position: "每頁最頂端，x=0 y=0"
+          style: "寬 960pt、高 5pt，填色為深藍（接近 0D1F33）"
+
+        - element: "底部三等份色條"
+          position: "每頁底部，y=518pt"
+          style: >
+            三個各 320pt 寬、22pt 高的矩形並排（left=0/320/640），
+            填色由左至右漸進從深藍到較淺藍（推測為 0B1826 / 163052 / 1E4080 或相近色系）
+
+        - element: "左側垂直強調線"
+          position: "各內容頁左側，x=0 y=5，高 513pt"
+          style: "寬 5-8pt 矩形，填色為電光藍 186AFF 或深藍，作為左邊界視覺錨"
+
+        - element: "頁碼/章節標籤（大數字）"
+          position: "各頁左上角或左側欄上方，約 x=4-26 y=14-20"
+          style: "80×70pt 文字框，40pt Bold，色碼 186AFF，顯示 01/02/03/04"
+
+        - element: "左側欄背景色塊（部分頁面）"
+          position: "x=0 y=5，寬 310-320pt，高 513pt"
+          style: "深藍色矩形，作為導航/說明側欄底色"
+
+        - element: "內容區橫向分隔線"
+          position: "各橫條內容區塊之間"
+          style: "2-3pt 高矩形，與卡片頂部色條配合使用"
+
+  slide_templates:
+    - type: "Cover / Title Slide"
+      source_slides: [1]
+      background: "純色 0B1826（深海藍）全版"
+      layout_description: >
+        左側佔 1/3 為深藍側欄（含點矩陣裝飾），右側 2/3 為主內容區。
+        左上角有 4×4 點陣圖案（6pt 小方點，4 列 4 欄，間距 26pt）。
+        左側欄底部有細橫線分隔裝飾。
+        右側內容垂直置中偏上：主標題、分隔線條、副標題、作者/日期資訊。
+        最底部三色條橫跨全幅（頁腳）。
+      elements:
+        - role: "background_full"
+          x: 0.0
+          y: 0.0
+          w: 10.0
+          h: 5.625
+          style: "矩形, fill 0B1826"
+        - role: "left_panel"
+          x: 0.0
+          y: 0.04
+          w: 3.31
+          h: 5.58
+          style: "矩形, fill 深藍（略淺於背景，約 0E2040）"
+        - role: "left_accent_line"
+          x: 0.0
+          y: 0.0
+          w: 0.07
+          h: 5.625
+          style: "矩形, fill 186AFF，寬 7pt"
+        - role: "dot_matrix_decoration"
+          x: 0.35
+          y: 0.35
+          w: 0.84
+          h: 0.84
+          style: "4×4 個 6pt 小方點矩陣，間距 26pt，fill 186AFF 或白色"
+        - role: "decorative_divider_line"
+          x: 0.35
+          y: 1.35
+          w: 1.87
+          h: 0.02
+          style: "矩形細線, fill 淺藍, 高 2pt"
+        - role: "title"
+          x: 3.60
+          y: 1.85
+          w: 5.83
+          h: 0.71
+          style: "40pt Bold, 色碼 FFFFFF, 左對齊, 微軟正黑體"
+        - role: "title_underline"
+          x: 3.72
+          y: 2.55
+          w: 4.17
+          h: 0.05
+          style: "矩形細線, fill 186AFF 或淺藍, 高 5pt"
+        - role: "subtitle"
+          x: 3.75
+          y: 2.73
+          w: 5.83
+          h: 0.5
+          style: "16pt Bold, 色碼 B2D9FC, 左對齊"
+        - role: "author_date"
+          x: 3.60
+          y: 3.67
+          w: 5.83
+          h: 0.5
+          style: "16pt Bold, 色碼 B2D9FC, 左對齊"
+        - role: "bottom_bar_left"
+          x: 0.0
+          y: 5.39
+          w: 3.33
+          h: 0.23
+          style: "矩形, fill 深藍 1（最深）"
+        - role: "bottom_bar_center"
+          x: 3.33
+          y: 5.39
+          w: 3.33
+          h: 0.23
+          style: "矩形, fill 深藍 2（中）"
+        - role: "bottom_bar_right"
+          x: 6.67
+          y: 5.39
+          w: 3.33
+          h: 0.23
+          style: "矩形, fill 深藍 3（最淺）"
+
+    - type: "Agenda / Table of Contents"
+      source_slides: [2]
+      background: "純色深藍全版"
+      layout_description: >
+        左側窄欄（寬 220pt）放章節標題大字 "Agenda"（白色 36pt）。
+        右側主區域排列 2×2 的 KPI 卡片格（每個卡片約 234×200pt）。
+        每張卡片：頂部有 6pt 色條、大型數字（52pt 藍色）、卡片標題（18pt 白/深灰）、底部 8pt 線條。
+        頁碼標籤（01~04）在左側欄底部兩個小方塊（30×30pt）。
+      elements:
+        - role: "left_panel"
+          x: 0.0
+          y: 0.05
+          w: 2.29
+          h: 5.34
+          style: "矩形, fill 深藍側欄色"
+        - role: "left_accent_line"
+          x: 0.0
+          y: 0.05
+          w: 0.06
+          h: 5.34
+          style: "矩形, fill 186AFF"
+        - role: "agenda_title"
+          x: 0.12
+          y: 1.54
+          w: 1.94
+          h: 1.25
+          style: "36pt Bold, 色碼 FFFFFF"
+        - role: "agenda_divider"
+          x: 0.19
+          y: 2.16
+          w: 1.25
+          h: 0.03
+          style: "矩形, fill 淺藍, 高 3pt"
+        - role: "kpi_card（×4，2行×2列）"
+          x: 2.48
+          y: 0.31
+          w: 2.44
+          h: 2.08
+          style: "矩形卡片, fill 深藍卡底；頂部 6pt 色條；數字 52pt Bold 186AFF；標題 18pt Bold 262626/FFFFFF"
+        - role: "card_number"
+          x: 2.60
+          y: 0.48
+          w: 0.83
+          h: 0.73
+          style: "52pt Bold, 色碼 186AFF"
+        - role: "card_label"
+          x: 2.60
+          y: 1.29
+          w: 2.23
+          h: 0.54
+          style: "18pt Bold, 色碼 262626"
+        - role: "card_bottom_bar"
+          x: 2.48
+          y: 2.31
+          w: 2.44
+          h: 0.08
+          style: "矩形, fill 深藍強調色, 高 8pt"
+
+    - type: "Content - Horizontal Row（橫條三列）"
+      source_slides: [3, 11]
+      background: "純色深藍全版（帶左側 6pt 藍色強調線）"
+      layout_description: >
+        頁面分為 3 個等高橫條（各約 120pt 高），每條左側有 6pt 色條強調，
+        左側區域（約 320pt）放圖示/標題，右側（580pt）放說明文字。
+        橫條之間以留白分隔。頁面頂部有標題區（含章節編號、頁標題、副標語）。
+        每橫條可含 Icon 組（Group）展示圖示＋類別標籤。
+      elements:
+        - role: "section_number_label"
+          x: 0.27
+          y: 0.21
+          w: 0.79
+          h: 0.36
+          style: "40pt Bold, 色碼 186AFF"
+        - role: "page_title"
+          x: 0.83
+          y: 0.23
+          w: 4.17
+          h: 0.52
+          style: "32pt Bold, 色碼 FFFFFF"
+        - role: "subtitle_tagline"
+          x: 0.31
+          y: 0.83
+          w: 7.29
+          h: 0.29
+          style: "16pt Bold, 色碼 82DFE8"
+        - role: "subtitle_underline"
+          x: 0.31
+          y: 0.73
+          w: 2.08
+          h: 0.03
+          style: "矩形細線, fill 淺藍"
+        - role: "row_container（×3）"
+          x: 0.29
+          y: 1.17
+          w: 9.42
+          h: 1.25
+          style: "矩形, fill 深藍卡底；左側 6pt 強調線 fill 186AFF"
+        - role: "row_icon_group"
+          x: 0.35
+          y: 1.32
+          w: 1.69
+          h: 0.25
+          style: "Group 含 Icon + 標籤文字"
+        - role: "row_title"
+          x: 0.77
+          y: 1.80
+          w: 2.71
+          h: 0.60
+          style: "20pt Bold, 色碼 FFFFFF"
+        - role: "row_divider_vertical"
+          x: 3.33
+          y: 1.31
+          w: 0.02
+          h: 0.96
+          style: "矩形垂直分隔線, fill 灰藍, 寬 2pt"
+        - role: "row_body_text"
+          x: 3.48
+          y: 1.27
+          w: 6.04
+          h: 1.04
+          style: "16pt Bold, 色碼 B2D9FC"
+
+    - type: "Content - Left Panel + Right Multi-Section（側欄＋右側多區塊）"
+      source_slides: [4, 5]
+      background: "純色深藍全版"
+      layout_description: >
+        左側欄（310pt）：章節標籤、節標題、節描述、補充說明群組、導覽群組。
+        右側主區（638pt）：分成 3 個堆疊的內容節（各約 165pt 高），
+        每節有頂部色條、標題、說明文、底部細線；節與節之間有 ▼ 箭頭符號連接，暗示階層流程。
+        各節可含右上角 Group（Tag 標籤群）。
+      elements:
+        - role: "left_panel_bg"
+          x: 0.0
+          y: 0.05
+          w: 3.23
+          h: 5.34
+          style: "矩形, fill 深藍側欄色"
+        - role: "left_accent_line"
+          x: 0.0
+          y: 0.05
+          w: 0.06
+          h: 5.34
+          style: "矩形, fill 186AFF"
+        - role: "left_section_number"
+          x: 0.10
+          y: 0.19
+          w: 0.83
+          h: 0.73
+          style: "40pt Bold, 色碼 186AFF"
+        - role: "left_title"
+          x: 0.10
+          y: 0.82
+          w: 2.79
+          h: 0.52
+          style: "28pt Bold, 色碼 FFFFFF"
+        - role: "left_divider"
+          x: 0.21
+          y: 1.27
+          w: 2.02
+          h: 0.04
+          style: "矩形細線, fill 淺藍"
+        - role: "left_subtitle"
+          x: 0.15
+          y: 1.55
+          w: 2.79
+          h: 0.31
+          style: "15pt Bold, 色碼 82DFE8"
+        - role: "right_section_bg（×3）"
+          x: 3.31
+          y: 0.05
+          w: 6.65
+          h: 1.72
+          style: "矩形, fill 略淺深藍；頂部 6pt 色條（186AFF 系）"
+        - role: "right_section_accent_line"
+          x: 3.31
+          y: 0.05
+          w: 0.06
+          h: 1.72
+          style: "矩形, fill 186AFF 或深藍"
+        - role: "right_section_icon"
+          x: 3.36
+          y: 0.21
+          w: 0.29
+          h: 0.26
+          style: "小圖示矩形, fill 強調色"
+        - role: "right_section_title"
+          x: 3.71
+          y: 0.20
+          w: 4.35
+          h: 0.29
+          style: "20pt Bold, 色碼 67ADF3 / 0E50CC / 052880（由上至下漸深）"
+        - role: "right_section_divider"
+          x: 3.44
+          y: 0.66
+          w: 6.46
+          h: 0.02
+          style: "矩形細線, fill 藍灰"
+        - role: "right_section_body"
+          x: 3.44
+          y: 0.76
+          w: 4.77
+          h: 0.88
+          style: "14pt Bold, 色碼 333333"
+        - role: "flow_arrow"
+          x: 3.55
+          y: 1.76
+          w: 0.21
+          h: 0.08
+          style: "▼ 符號, 10pt, 色碼 7AB8F5"
+        - role: "tag_group_right"
+          x: 8.33
+          y: 0.16
+          w: 1.56
+          h: 0.27
+          style: "Group 含標籤文字, 右上角位置"
+
+    - type: "Content - Section Divider（章節過渡頁）"
+      source_slides: [6, 12]
+      background: "純色深藍全版（帶頂部大色塊 header）"
+      layout_description: >
+        頂部有大型橫幅色塊（約 92pt 高），含 Logo 或章節 Group。
+        左側有 5pt 垂直強調線。
+        主內容區空曠，放置大型插圖/圖表 Group 佔據右下 2/3 區域。
+        左側單行小標題（輔助說明）。
+        頁面整體相對空曠，以圖像/視覺元素為主。
+      elements:
+        - role: "top_header_bar"
+          x: 0.05
+          y: 0.0
+          w: 9.95
+          h: 0.96
+          style: "矩形大色塊, fill 深藍偏深"
+        - role: "top_accent_line"
+          x: 0.0
+          y: 0.0
+          w: 10.0
+          h: 0.05
+          style: "矩形, fill 186AFF"
+        - role: "left_accent_line"
+          x: 0.0
+          y: 0.05
+          w: 0.05
+          h: 5.34
+          style: "矩形, fill 186AFF"
+        - role: "logo_group"
+          x: 0.08
+          y: 0.21
+          w: 3.23
+          h: 0.73
+          style: "Group 含 Logo 文字/圖示"
+        - role: "subtitle_tagline"
+          x: 0.19
+          y: 1.18
+          w: 2.31
+          h: 0.28
+          style: "16pt Bold, 色碼 82DFE8"
+        - role: "main_visual_group"
+          x: 2.26
+          y: 1.46
+          w: 5.49
+          h: 3.79
+          style: "Group 含主視覺插圖或圖表"
+
+    - type: "Content - Comparison Table（比較/評分表）"
+      source_slides: [7]
+      background: "純色深藍全版"
+      layout_description: >
+        頂部有全幅橫幅色塊（85pt 高），含主標題（24pt 白色）和副標語（15pt 薄荷藍）。
+        橫幅下方有 4pt 全幅橫線分隔。
+        主體分左右兩欄（各 466pt），各欄有頂部色塊標題列（52pt 高，含列標題）、
+        數個內容行（各 62pt，含左側色標標籤和文字），底部有補充說明列。
+        左欄用於「錯誤示範」（紅字/深色底），右欄用於「正確示範」（深藍底 + Step 標籤）。
+        中間有中央分隔符號（箭頭/圖示文字）。
+      elements:
+        - role: "header_bar"
+          x: 0.0
+          y: 0.0
+          w: 10.0
+          h: 0.89
+          style: "矩形, fill 深藍，高 85pt"
+        - role: "header_title"
+          x: 0.70
+          y: 0.14
+          w: 9.17
+          h: 0.48
+          style: "24pt Bold, 色碼 FFFFFF"
+        - role: "header_subtitle"
+          x: 0.70
+          y: 0.55
+          w: 9.17
+          h: 0.29
+          style: "15pt Bold, 色碼 82DFE8"
+        - role: "header_divider"
+          x: 0.0
+          y: 0.89
+          w: 10.0
+          h: 0.04
+          style: "矩形全幅橫線, fill 藍灰"
+        - role: "left_column_container"
+          x: 0.15
+          y: 1.0
+          w: 4.65
+          h: 4.33
+          style: "矩形, fill 深藍卡底；左側 5pt 色條"
+        - role: "column_header_row"
+          x: 0.20
+          y: 1.0
+          w: 4.59
+          h: 0.54
+          style: "矩形標題列, fill 略深，20pt Bold FFFFFF"
+        - role: "content_row（×3+）"
+          x: 0.29
+          y: 1.67
+          w: 4.35
+          h: 0.65
+          style: "矩形行, fill 淺深藍；左側 4pt 色條 fill 強調色；17pt 正文"
+        - role: "center_separator_icon"
+          x: 4.83
+          y: 2.96
+          w: 0.33
+          h: 0.42
+          style: "文字符號, fill 對比色"
+        - role: "right_column_container"
+          x: 5.01
+          y: 1.0
+          w: 4.85
+          h: 4.33
+          style: "矩形, fill 深藍卡底；右側 5pt 色條"
+        - role: "step_label_cell"
+          x: 5.15
+          y: 1.67
+          w: 0.69
+          h: 0.65
+          style: "矩形, fill 186AFF；14pt Bold FFFFFF，'Step N'"
+        - role: "step_content_cell"
+          x: 5.92
+          y: 1.67
+          w: 3.73
+          h: 0.65
+          style: "矩形, fill 淺深藍；17pt Bold 262626"
+        - role: "footer_note"
+          x: 0.29
+          y: 4.10
+          w: 4.35
+          h: 0.5
+          style: "14pt Bold, 色碼 F75801（左）或 0843AD（右）"
+
+    - type: "Content - Flow Diagram（流程圖/決策樹）"
+      source_slides: [8, 9]
+      background: "純色深藍全版"
+      layout_description: >
+        頂部橫幅色塊（76pt）含大標題（28pt 白）。
+        主體使用中央垂直線（14pt 寬矩形）作為流程主軸，
+        左右各放流程節點（44×44pt 圓形數字編號 + 橫線引出 + Group 說明文字）。
+        節點依序由上至下排列（間距約 104pt），連線向左或向右延伸。
+        可能含左側輔助說明欄（如觸發條件說明）和右側詳細說明欄。
+      elements:
+        - role: "header_bar"
+          x: 0.0
+          y: 0.05
+          w: 10.0
+          h: 0.79
+          style: "矩形, fill 深藍"
+        - role: "header_title"
+          x: 0.63
+          y: 0.23
+          w: 4.17
+          h: 0.44
+          style: "28pt Bold, 色碼 FFFFFF"
+        - role: "header_divider"
+          x: 0.0
+          y: 0.84
+          w: 10.0
+          h: 0.04
+          style: "矩形全幅線"
+        - role: "flow_center_axis"
+          x: 4.93
+          y: 0.91
+          w: 0.15
+          h: 4.42
+          style: "矩形垂直主軸線, fill 186AFF 或深藍"
+        - role: "step_circle（×4）"
+          x: 4.77
+          y: 1.23
+          w: 0.46
+          h: 0.46
+          style: "矩形（模擬圓形）, fill 186AFF；18pt Bold FFFFFF，顯示 01/02/03/04"
+        - role: "step_horizontal_line"
+          x: 5.23
+          y: 1.43
+          w: 0.46
+          h: 0.04
+          style: "矩形橫線引出, fill 深藍"
+        - role: "step_content_group"
+          x: 5.69
+          y: 2.04
+          w: 4.24
+          h: 0.92
+          style: "Group 含說明文字區塊"
+
+    - type: "Content - Three-Card Comparison（三欄卡片比較）"
+      source_slides: [10]
+      background: "純色深藍全版"
+      layout_description: >
+        頂部橫幅（76pt）含標題。
+        主體三個等寬卡片並排（各 290pt 寬，400pt 高），使用圓角矩形（Rounded Rectangle）。
+        每張卡片：頂部 5pt 色條 + 規則標題（22pt）+ 規則名稱（18pt）+ 副標題（14pt）+ 細分隔線 +
+        兩個「禁用項目」行（各含圓角矩形高亮 + 左側 3pt 色條）+ 說明文字行 + 底部提示區（含 💡 emoji）。
+      elements:
+        - role: "header_bar"
+          x: 0.0
+          y: 0.05
+          w: 10.0
+          h: 0.81
+          style: "矩形, fill 深藍"
+        - role: "header_title"
+          x: 0.67
+          y: 0.24
+          w: 4.17
+          h: 0.43
+          style: "28pt Bold, 色碼 FFFFFF"
+        - role: "card_container（×3，並排）"
+          x: 0.19
+          y: 1.02
+          w: 3.02
+          h: 4.17
+          style: "圓角矩形, fill 深藍卡底，corner_radius ≈ 6pt"
+        - role: "card_top_accent"
+          x: 0.19
+          y: 1.02
+          w: 3.02
+          h: 0.05
+          style: "矩形色條, fill 各卡主色（186AFF / 36CBDA / FFD600）"
+        - role: "card_rule_label"
+          x: 0.35
+          y: 1.16
+          w: 2.69
+          h: 0.35
+          style: "22pt Bold, 色碼依卡片（186AFF / 36CBDA / FFD600）"
+        - role: "card_rule_name"
+          x: 0.35
+          y: 1.52
+          w: 2.69
+          h: 0.31
+          style: "18pt Bold, 色碼 FFFFFF"
+        - role: "card_rule_subtitle"
+          x: 0.35
+          y: 1.83
+          w: 2.69
+          h: 0.25
+          style: "14pt Bold, 色碼依卡片主色"
+        - role: "card_divider"
+          x: 0.35
+          y: 2.12
+          w: 2.69
+          h: 0.02
+          style: "矩形細線, fill 深藍灰"
+        - role: "card_forbidden_item（×2）"
+          x: 0.35
+          y: 2.25
+          w: 2.69
+          h: 0.37
+          style: "圓角矩形, fill 深藍；左側 3pt 色條；14pt Bold 各卡主色"
+        - role: "card_forbidden_note"
+          x: 0.35
+          y: 2.71
+          w: 2.69
+          h: 0.25
+          style: "14pt Bold, 色碼 8AABCC"
+        - role: "card_tip_area"
+          x: 0.35
+          y: 4.40
+          w: 2.69
+          h: 0.65
+          style: "矩形底部提示區, fill 深藍；💡 emoji + 14pt Bold 6A8BA8"
+
+    - type: "Closing / Thank You"
+      source_slides: [11]
+      background: "純色深藍全版（帶左側 8pt 強調線）"
+      layout_description: >
+        頂部有 Logo/標題 Group（橫跨約 553pt）。
+        頁面主體為橫條列表（3 個高亮條），每條含左側 icon 圖形 Group（90pt）
+        和右側大標題（20pt）+ 說明文字（14pt 淺藍）。
+        底部有細橫線和小型連結群組（如社群帳號）。
+        整體感覺是摘要/收尾型頁面。
+      elements:
+        - role: "logo_title_group"
+          x: 0.12
+          y: 0.25
+          w: 5.76
+          h: 0.72
+          style: "Group 含 Logo 圖示 + 標題文字"
+        - role: "top_divider_line"
+          x: 0.15
+          y: 1.21
+          w: 9.92
+          h: 0.04
+          style: "矩形細線"
+        - role: "highlight_row（×3）"
+          x: 0.10
+          y: 1.52
+          w: 9.71
+          h: 1.02
+          style: "矩形色塊行；左側 icon Group（90×98pt）；右側標題＋說明"
+        - role: "row_icon_group"
+          x: 0.19
+          y: 1.53
+          w: 0.94
+          h: 1.02
+          style: "Group 含 icon 圖示, fill 深藍 + 彩色圖示"
+        - role: "row_title"
+          x: 1.21
+          y: 1.68
+          w: 8.5
+          h: 0.31
+          style: "20pt Bold, 色碼 FFFFFF"
+        - role: "row_body"
+          x: 1.31
+          y: 2.05
+          w: 8.5
+          h: 0.48
+          style: "14pt Bold, 色碼 B2D9FC"
+        - role: "bottom_divider"
+          x: 0.15
+          y: 5.37
+          w: 9.71
+          h: 0.02
+          style: "矩形細線"
+        - role: "social_links_group"
+          x: 0.09
+          y: 4.54
+          w: 0.71
+          h: 0.12
+          style: "Group 含社群/連結圖示"
+
+  instructions_for_generation:
+    - "Tone: 技術簡報風格，沉穩且具現代科技感。使用深海藍作為主基調，避免鮮豔插圖或卡通元素；整體應傳達「嚴謹、系統化、可執行」的信息。"
+
+    - "Color discipline: 嚴格控制用色。主強調色只有一個（186AFF 電光藍）；成功用 36CBDA、警示用 F75801、特殊規則用 FFD600；說明文字用 B2D9FC/82DFE8；正文依底色選 FFFFFF 或 333333/262626。不得自行引入其他顏色。"
+
+    - "Typography: 全報使用微軟正黑體（Microsoft JhengHei / 微軟正黑體）。中英文混排不換字型。不使用任何襯線字體（Times New Roman、宋體等）。所有文字均設為 Bold（本簡報無 Regular 或 Light 字重用法）。"
+
+    - "Font size hierarchy（必須遵守）: 大數字/KPI 52pt → 封面主標題 40pt → 頁碼標籤 40pt → 章節標題 28-32pt → 卡片標題 20-24pt → 頁標題/列標題 16-20pt → 正文 14-16pt → 最小不低於 14pt。"
+
+    - "Recurring decorators（每頁必須包含）: ① 頂部 5pt 細色條 ② 底部三等份色條（y=518, h=22，三份各 320pt 寬） ③ 左側垂直 5-8pt 強調線 ④ 左上角兩位數章節編號（40pt 186AFF）。"
+
+    - "Charts: 本簡報無傳統統計圖表（長條圖、折線圖等）。數據以卡片式 KPI 大數字、條列式行區塊、結構化表格呈現。若需加入圖表，維持深色背景 + 電光藍系列色，不使用彩虹配色。"
+
+    - "Icons: 使用幾何形狀模擬（矩形/圓角矩形填色）加文字/emoji，無獨立向量圖示引入。偶爾使用 ❌ ✅ 💡 ▼ 等 Unicode 符號作輔助視覺。避免引入第三方圖示庫風格。"
+
+    - "Layout logic: 優先使用「左側欄 + 右側主內容」或「全幅橫條列表」結構。卡片必須是純色矩形（無漸層、無陰影）；卡片頂部一定有色條（4-8pt）。水平比較頁維持嚴格左右對稱。"
+
+    - "Forbidden elements: ① 白色或淺色背景 ② 漸層填色 ③ 任何形式的陰影或毛玻璃 ④ 圓角超過 6pt ⑤ 彩色插圖或 Clipart ⑥ 頁面設計語言不一致的字型 ⑦ 低於 14pt 的文字 ⑧ Regular 或 Light 字重 ⑨ 超過本規格書定義的配色範圍。"
+
+    - "Text color rules: 深色背景上主文一律 FFFFFF；次文用 B2D9FC；輔助說明用 82DFE8 或 8AABCC。淺色卡片底（若有）上用 333333/262626。切勿在深色底上用黑色文字。"
+
+    - "Spacing convention: 橫條行高約 120pt；卡片頂部色條 5-8pt；卡片間留白約 8-16pt；頁面左邊距約 30pt（強調線後），頂部起始約 20-30pt（頂部細線後）。"
+
+    - "Number labeling: 每個章節頁和內容頁左上角必須有兩位數數字標籤（01/02/03/04），40pt Bold 186AFF，置於約 80×70pt 的文字框中，不帶背景色。"

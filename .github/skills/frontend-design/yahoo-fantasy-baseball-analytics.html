@@ -1,0 +1,3657 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yahoo Fantasy Baseball Analyzer v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #111318;
+      --paper: #f3f1ea;
+      --paper-warm: #ebe7dd;
+      --accent: #ef4f23;
+      --accent-2: #0f6cff;
+      --card: rgba(255, 255, 255, 0.88);
+      --line: rgba(17, 19, 24, 0.14);
+      --shadow: 0 18px 40px rgba(17, 19, 24, 0.13);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Manrope", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1300px 500px at 90% -20%, rgba(239, 79, 35, 0.18), transparent 70%),
+        radial-gradient(900px 400px at -10% 90%, rgba(15, 108, 255, 0.22), transparent 60%),
+        linear-gradient(130deg, var(--paper) 0%, var(--paper-warm) 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(17, 19, 24, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(17, 19, 24, 0.04) 1px, transparent 1px);
+      background-size: 24px 24px;
+      mix-blend-mode: multiply;
+      z-index: -1;
+    }
+
+    .wrap {
+      width: min(1600px, 100% - 1rem);
+      margin: 1.4rem auto 3rem;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .hero {
+      background: linear-gradient(130deg, var(--ink) 0%, #2a3345 100%);
+      color: #fbfaf7;
+      border-radius: calc(var(--radius) + 8px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+      padding: 1.2rem 1.4rem 1.4rem;
+      display: grid;
+      gap: 0.7rem;
+      animation: rise 580ms ease-out;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -60px;
+      top: -80px;
+      width: 280px;
+      height: 280px;
+      transform: rotate(18deg);
+      background: linear-gradient(180deg, rgba(239, 79, 35, 0.95), rgba(239, 79, 35, 0));
+      filter: blur(3px);
+      opacity: 0.9;
+    }
+
+    .eyebrow {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Bebas Neue", sans-serif;
+      letter-spacing: 0.03em;
+      font-size: clamp(2rem, 5.5vw, 4.2rem);
+      line-height: 0.92;
+      text-wrap: balance;
+    }
+
+    .hero p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.86);
+      font-size: clamp(0.9rem, 2vw, 1.05rem);
+      max-width: 820px;
+    }
+
+    .mode-switcher {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      width: fit-content;
+      padding: 0.25rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.75);
+      box-shadow: 0 6px 18px rgba(17, 19, 24, 0.08);
+    }
+
+    .mode-btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #3f485d;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .mode-btn.active {
+      color: #fff;
+      background: linear-gradient(120deg, #ef4f23, #c93d18);
+      box-shadow: 0 6px 14px rgba(201, 61, 24, 0.35);
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      overflow: clip;
+      animation: rise 720ms ease-out;
+    }
+
+    .panel-header {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .panel-body {
+      padding: 1rem;
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .import-zone {
+      border: 2px dashed var(--line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 1rem;
+      display: grid;
+      gap: 0.75rem;
+      transition: border-color 0.2s;
+    }
+
+    .import-zone.drag-over {
+      border-color: var(--accent-2);
+      background: rgba(15, 108, 255, 0.06);
+    }
+
+    .drop-target {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      transition: background 0.15s;
+    }
+
+    .drop-target:hover { background: #f0f5ff; }
+
+    .drop-target input[type=file] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .drop-icon { font-size: 1.8rem; }
+    .drop-label { font-size: 0.85rem; font-weight: 700; }
+    .drop-hint { font-size: 0.76rem; color: #5b6480; }
+
+    .import-or {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.78rem;
+      color: #7a8499;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .import-or::before,
+    .import-or::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 90px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.6rem 0.75rem;
+      font-family: Consolas, monospace;
+      font-size: 0.8rem;
+      resize: vertical;
+      background: #fafaf8;
+    }
+
+    .format-hint {
+      background: #f7f6f2;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.76rem;
+      line-height: 1.45;
+      color: #3d4558;
+    }
+
+    .format-hint code {
+      background: #e8e6df;
+      border-radius: 4px;
+      padding: 0.1rem 0.3rem;
+      font-size: 0.73rem;
+    }
+
+    .import-actions {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .import-status {
+      font-size: 0.82rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 10px;
+      display: none;
+    }
+
+    .import-status.ok {
+      display: block;
+      background: rgba(23, 163, 107, 0.12);
+      color: #0f7f53;
+      border: 1px solid rgba(23, 163, 107, 0.25);
+    }
+
+    .import-status.err {
+      display: block;
+      background: rgba(205, 52, 52, 0.1);
+      color: #8a1e1e;
+      border: 1px solid rgba(205, 52, 52, 0.2);
+    }
+
+    .tab-nav {
+      display: flex;
+      gap: 0;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 4px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-width: 120px;
+      padding: 0.55rem 1rem;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      color: #61697d;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      transition: all 0.18s;
+    }
+
+    .tab-btn.active {
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .tab-btn:hover:not(.active) {
+      background: rgba(17, 19, 24, 0.07);
+      color: var(--ink);
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: grid; gap: 1rem; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.05fr 1.4fr;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .tab-stack {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .control-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+
+    .control-grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .field {
+      display: grid;
+      gap: 0.36rem;
+    }
+
+    .field label {
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #4c566c;
+    }
+
+    input,
+    select,
+    button {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #ffffff;
+      color: var(--ink);
+      padding: 0.56rem 0.72rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+
+    button {
+      width: auto;
+      padding: 0.56rem 0.9rem;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 0.03em;
+    }
+
+    button:hover {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    button.primary:hover {
+      background: #c93d18;
+      border-color: #c93d18;
+    }
+
+    button.ghost {
+      background: transparent;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus,
+    button:focus {
+      outline: 2px solid rgba(15, 108, 255, 0.35);
+      outline-offset: 1px;
+    }
+
+    .mini-kpi {
+      display: grid;
+      gap: 0.6rem;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .col-toggle-block {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 0.6rem;
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .col-toggle-title {
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: #5d6578;
+    }
+
+    .col-toggle-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+
+    .col-preset-btn {
+      border: 1px solid var(--line);
+      background: #f5f7fb;
+      color: #2a3550;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      padding: 0.2rem 0.45rem;
+      width: auto;
+    }
+
+    .col-preset-btn:hover {
+      background: #1f2e49;
+      color: #fff;
+      border-color: #1f2e49;
+    }
+
+    .col-toggle-grid {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 0.32rem;
+    }
+
+    .col-toggle-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.24rem;
+      font-size: 0.65rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.15rem 0.38rem;
+      background: #fafaf8;
+      white-space: nowrap;
+    }
+
+    .col-toggle-item input {
+      width: 0.75rem;
+      height: 0.75rem;
+      margin: 0;
+      accent-color: var(--accent-2);
+      border-radius: 4px;
+      padding: 0;
+    }
+
+    .risk-tuning {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 0.6rem;
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .risk-tuning-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.6rem;
+      align-items: baseline;
+      font-size: 0.7rem;
+      color: #56617a;
+      font-weight: 700;
+    }
+
+    .risk-tuning-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.45rem;
+    }
+
+    .risk-col {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fafaf8;
+      padding: 0.5rem;
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .risk-col-title {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #36405a;
+    }
+
+    .risk-row {
+      display: grid;
+      grid-template-columns: 1fr 64px;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.68rem;
+      color: #46526e;
+    }
+
+    .risk-row input {
+      padding: 0.2rem 0.32rem;
+      border-radius: 8px;
+      font-size: 0.68rem;
+      text-align: right;
+    }
+
+    .kpi {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 0.7rem;
+      display: grid;
+      gap: 0.2rem;
+      min-height: 70px;
+    }
+
+    .kpi .name {
+      font-size: 0.71rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #5d6578;
+    }
+
+    .kpi .value {
+      font-size: 1.22rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .kpi .hint {
+      font-size: 0.72rem;
+      color: #5e6575;
+    }
+
+    .table-wrap {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      max-height: 640px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 0.78rem;
+    }
+
+    th,
+    td {
+      padding: 0.35rem 0.25rem;
+      border-bottom: 1px dashed rgba(17, 19, 24, 0.11);
+      text-align: right;
+      white-space: normal;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.15;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2),
+    th:nth-child(3),
+    td:nth-child(3),
+    th:nth-child(4),
+    td:nth-child(4) {
+      text-align: left;
+    }
+
+    th.star-col,
+    td.star-col {
+      width: 32px;
+      text-align: center;
+      padding-left: 0.15rem;
+      padding-right: 0.15rem;
+    }
+
+    .star-btn {
+      border: 0;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      color: #bcc2d0;
+      font-size: 0.95rem;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.12s ease, color 0.12s ease, background 0.12s ease;
+    }
+
+    .star-btn:hover {
+      color: #d08a00;
+      background: rgba(208, 138, 0, 0.12);
+      transform: scale(1.06);
+    }
+
+    .star-btn.starred {
+      color: #7b5000;
+      background: rgba(227, 164, 0, 0.22);
+    }
+
+    th {
+      background: #f7f6f2;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    th:hover { background: #ede9e0; }
+    tr:hover td { background: #fdf7ee; }
+
+    .score-pill {
+      font-weight: 800;
+      padding: 0.18rem 0.44rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      display: inline-block;
+    }
+
+    .s-elite { background: rgba(23, 163, 107, 0.15); color: #0f7f53; }
+    .s-solid { background: rgba(15, 108, 255, 0.13); color: #1456b2; }
+    .s-watch { background: rgba(227, 164, 0, 0.2); color: #916a00; }
+    .s-risk { background: rgba(205, 52, 52, 0.16); color: #8a1e1e; }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+    }
+
+    .legend span {
+      padding: 0.18rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.8);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .compare-grid {
+      display: grid;
+      gap: 0.95rem;
+    }
+
+    .compare-selects,
+    .compare-cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.8rem;
+    }
+
+    .player-block {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      padding: 0.85rem;
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .player-title {
+      font-family: "Bebas Neue", sans-serif;
+      letter-spacing: 0.03em;
+      font-size: 1.45rem;
+      margin: 0;
+      line-height: 0.95;
+    }
+
+    .meta {
+      font-size: 0.79rem;
+      color: #61697d;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.4rem;
+    }
+
+    .metric {
+      background: #f8f8f6;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.4rem;
+      text-align: center;
+    }
+
+    .metric .m-label {
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: #64708b;
+    }
+
+    .metric .m-val {
+      display: block;
+      font-size: 1.02rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    canvas {
+      width: 100%;
+      height: 330px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      display: block;
+    }
+
+    .insight {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      padding: 0.85rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #2c3447;
+    }
+
+    .trade-layout {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0.8rem;
+      align-items: start;
+    }
+
+    .trade-side {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .trade-side-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #4c566c;
+    }
+
+    .trade-list-box {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      min-height: 160px;
+      padding: 0.6rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      gap: 0.4rem;
+    }
+
+    .trade-pill {
+      padding: 0.3rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+
+    .trade-pill.give {
+      background: rgba(239, 79, 35, 0.12);
+      color: #c93d18;
+      border: 1px solid rgba(239, 79, 35, 0.3);
+    }
+
+    .trade-pill.receive {
+      background: rgba(15, 108, 255, 0.11);
+      color: #1456b2;
+      border: 1px solid rgba(15, 108, 255, 0.3);
+    }
+
+    .trade-divider {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding-top: 2rem;
+    }
+
+    .trade-vs {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 2.4rem;
+      letter-spacing: 0.05em;
+      color: #c4c9d6;
+      line-height: 1;
+    }
+
+    .trade-result {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      overflow: clip;
+    }
+
+    .trade-result-header {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .trade-result-body {
+      padding: 1rem;
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    .trade-compare-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0.8rem;
+      align-items: center;
+    }
+
+    .trade-stat {
+      display: grid;
+      gap: 0.2rem;
+    }
+
+    .trade-stat.right { text-align: right; }
+
+    .trade-stat-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #5d6578;
+    }
+
+    .trade-stat-val {
+      font-size: 1.3rem;
+      font-weight: 800;
+    }
+
+    .trade-bar-wrap {
+      width: 190px;
+      height: 8px;
+      border-radius: 999px;
+      background: #eee;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .trade-bar {
+      position: absolute;
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+    .trade-bar.give { left: 0; background: var(--accent); }
+    .trade-bar.receive { right: 0; background: var(--accent-2); }
+
+    .verdict-box {
+      padding: 0.85rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .verdict-box.win {
+      background: rgba(23, 163, 107, 0.12);
+      color: #0f7f53;
+      border: 1px solid rgba(23, 163, 107, 0.25);
+    }
+
+    .verdict-box.loss {
+      background: rgba(205, 52, 52, 0.1);
+      color: #8a1e1e;
+      border: 1px solid rgba(205, 52, 52, 0.2);
+    }
+
+    .verdict-box.even {
+      background: rgba(227, 164, 0, 0.13);
+      color: #916a00;
+      border: 1px solid rgba(227, 164, 0, 0.3);
+    }
+
+    .player-search {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f6f95' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='16.65' y1='16.65' x2='21' y2='21'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 0.68rem center;
+      background-size: 0.95rem 0.95rem;
+      padding-left: 2.05rem;
+      border-color: rgba(15, 108, 255, 0.35);
+      background-color: #fbfdff;
+    }
+
+    select.select-expanded {
+      height: auto;
+      max-height: 210px;
+      overflow-y: auto;
+      border: 1.5px solid rgba(15, 108, 255, 0.48);
+      border-radius: 8px;
+      box-shadow: 0 6px 22px rgba(17, 19, 24, 0.14);
+      background: #fff;
+      padding: 0.18rem 0;
+    }
+
+    select.select-expanded option {
+      padding: 0.36rem 0.72rem;
+    }
+
+    .kpi-filter-btn {
+      margin-top: 0.3rem;
+      width: auto;
+      padding: 0.18rem 0.56rem;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 108, 255, 0.24);
+      background: rgba(15, 108, 255, 0.08);
+      color: var(--accent-2);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+    }
+
+    .kpi-filter-btn:hover {
+      background: var(--accent-2);
+      border-color: var(--accent-2);
+      color: #fff;
+    }
+
+    .kpi.kpi-active {
+      border-color: rgba(15, 108, 255, 0.52);
+      box-shadow: 0 0 0 2px rgba(15, 108, 255, 0.15);
+      background: rgba(15, 108, 255, 0.04);
+    }
+
+    .kpi-active-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+      margin-bottom: 0.55rem;
+      padding: 0.38rem 0.72rem;
+      border-radius: 10px;
+      border: 1px solid rgba(15, 108, 255, 0.24);
+      background: rgba(15, 108, 255, 0.08);
+      color: #1456b2;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .kpi-active-bar.active {
+      display: flex;
+    }
+
+    .kpi-clear-btn {
+      width: auto;
+      padding: 0.14rem 0.44rem;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 108, 255, 0.35);
+      background: transparent;
+      color: #1456b2;
+      font-size: 0.74rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .kpi-clear-btn:hover {
+      background: var(--accent-2);
+      border-color: var(--accent-2);
+      color: #fff;
+    }
+
+    .trade-instructions {
+      font-size: 0.82rem;
+      color: #555f75;
+      line-height: 1.45;
+    }
+
+    .footer-note {
+      font-size: 0.78rem;
+      color: #576074;
+      text-align: right;
+    }
+
+    .col-tip {
+      position: fixed;
+      z-index: 9999;
+      max-width: 230px;
+      padding: 0.5rem 0.62rem;
+      border-radius: 10px;
+      background: rgba(17, 19, 24, 0.95);
+      color: #f3f5fa;
+      font-size: 0.74rem;
+      line-height: 1.35;
+      white-space: pre-line;
+      pointer-events: none;
+      box-shadow: 0 14px 26px rgba(17, 19, 24, 0.35);
+      display: none;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 980px) {
+      .two-col,
+      .control-grid,
+      .mini-kpi,
+      .compare-selects,
+      .compare-cards,
+      .trade-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .col-toggle-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .risk-tuning-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .trade-divider {
+        flex-direction: row;
+        padding-top: 0;
+      }
+
+      .trade-compare-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 1500px) {
+      table {
+        font-size: 0.72rem;
+      }
+
+      th {
+        font-size: 0.64rem;
+      }
+
+      .col-toggle-grid {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <span class="eyebrow">Fantasy Decision Desk v3</span>
+      <h1>Yahoo Fantasy Baseball 球員數據分析平台</h1>
+      <p>支援 H2H Categories 與 H2H Points 雙模式，打者與投手可分開排行、雙球員對比，並提供交易評估。</p>
+    </section>
+
+    <div class="mode-switcher" aria-label="玩法模式切換">
+      <button class="mode-btn active" type="button" data-mode="categories">H2H Categories</button>
+      <button class="mode-btn" type="button" data-mode="points">H2H Points</button>
+    </div>
+
+    <section class="panel">
+      <header class="panel-header">
+        <h2 class="panel-title">匯入聯盟資料</h2>
+        <small id="dataSourceLabel">資料庫載入中</small>
+      </header>
+      <div class="panel-body">
+        <div class="import-zone" id="importZone">
+          <label class="drop-target" id="dropTarget">
+            <input type="file" id="fileInput" accept=".csv,.json" multiple />
+            <span class="drop-icon">📂</span>
+            <span class="drop-label">拖曳 CSV / JSON 至此，或按此選擇檔案（可多選）</span>
+            <span class="drop-hint">可一次匯入多個檔案，系統會自動合併打者與投手資料</span>
+          </label>
+
+          <div class="import-or">或貼上資料</div>
+          <textarea id="pasteArea" placeholder="貼上 CSV 或 JSON"></textarea>
+
+          <div class="format-hint">
+            打者欄位範例：
+            <code>Player,Team,Pos,AVG,HR,RBI,SB,OPS,SO,BB</code>
+            <br />
+            投手欄位範例：
+            <code>Player,Team,Pos,ERA,WHIP,K9,QS,W,SVH,IP</code>
+          </div>
+
+          <div class="import-actions">
+            <button class="primary" id="importBtn">解析並載入</button>
+            <button class="ghost" id="resetBtn">還原預設資料</button>
+          </div>
+          <div class="import-status" id="importStatus"></div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="tab-nav" role="tablist">
+      <button class="tab-btn active" data-tab="batters">打者排行</button>
+      <button class="tab-btn" data-tab="pitchers">投手排行</button>
+      <button class="tab-btn" data-tab="compare">對位分析</button>
+      <button class="tab-btn" data-tab="trade">交易模擬</button>
+    </nav>
+
+    <div id="tab-batters" class="tab-content active">
+      <div class="tab-stack">
+        <article class="panel">
+          <header class="panel-header"><h2 class="panel-title">打者篩選</h2></header>
+          <div class="panel-body">
+            <div class="control-grid">
+              <div class="field"><label>搜尋</label><input id="b-search" type="text" placeholder="名稱或球隊" /></div>
+              <div class="field"><label>守位</label><select id="b-pos"><option value="ALL">全部</option></select></div>
+              <div class="field"><label>Fantasy 類型</label><select id="b-category"><option value="ALL">全部</option><option value="POWER">長打型 (HR≥15)</option><option value="SPEED">速度型 (SB≥20)</option><option value="AVG">高打擊率 (AVG≥0.280)</option><option value="OBP">高上壘率 (OBP≥0.340)</option><option value="FA">FA 可簽 (Roster%&lt;80)</option><option value="WATCHLIST">觀察名單</option></select></div>
+              <div class="field"><label>排序</label><select id="b-sort"><option value="valueScore">價值分數</option><option value="riskScore">風險分數</option><option value="netScore" hidden>淨價值分數 (VAL-RISK)</option><option value="r">R</option><option value="hr">HR</option><option value="rbi">RBI</option><option value="sb">SB</option><option value="avg">AVG</option><option value="obp">OBP</option><option value="ops">OPS</option><option value="slg">SLG</option><option value="age">Age</option></select></div>
+            </div>
+
+            <div class="mini-kpi">
+              <div class="kpi"><span class="name">平均價值</span><span class="value" id="b-avgVal">-</span><span class="hint">越高越值布局</span></div>
+              <div class="kpi" id="kpi-b-multitool"><span class="name">跑打兼具球員數</span><span class="value" id="b-riskRate">-</span><span class="hint">HR≥20 且 SB≥20</span><button class="kpi-filter-btn" type="button" data-table="b" data-filter="multitool">看有哪些球員</button></div>
+              <div class="kpi" id="kpi-b-elite"><span class="name">菁英球員數</span><span class="value" id="b-mispriced">-</span><span class="hint">Elite 等級球員數</span><button class="kpi-filter-btn" type="button" data-table="b" data-filter="elite">看有哪些球員</button></div>
+            </div>
+
+            <div class="col-toggle-block">
+              <div class="col-toggle-title">欄位顯示</div>
+              <div class="col-toggle-actions" id="b-col-actions">
+                <button class="col-preset-btn" type="button" data-target="b" data-preset="all">全選</button>
+                <button class="col-preset-btn" type="button" data-target="b" data-preset="none">全不選</button>
+                <button class="col-preset-btn" type="button" data-target="b" data-preset="h2h">只看 H2H</button>
+              </div>
+              <div class="col-toggle-grid" id="b-col-toggle"></div>
+            </div>
+
+            <div class="legend">
+              <span><i class="dot" style="background:#0f7f53"></i>Elite</span>
+              <span><i class="dot" style="background:#1456b2"></i>Solid</span>
+              <span><i class="dot" style="background:#916a00"></i>Watch</span>
+              <span><i class="dot" style="background:#8a1e1e"></i>Risk</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <header class="panel-header"><h2 class="panel-title">打者排行榜</h2><small id="b-count">0</small></header>
+          <div class="panel-body" style="padding-top:0.4rem;">
+            <div class="kpi-active-bar" id="b-filter-bar"><span id="b-filter-label">篩選中：-</span><button class="kpi-clear-btn" type="button" data-table="b">清除篩選</button></div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th data-target="b" data-key="__star" class="star-col">★</th>
+                    <th data-target="b" data-key="name">PLAYER</th>
+                    <th data-target="b" data-key="team">TEAM</th>
+                    <th data-target="b" data-key="position">POS</th>
+                    <th data-target="b" data-key="age">Age</th>
+                    <th data-target="b" data-key="g">G</th>
+                    <th data-target="b" data-key="ab">AB</th>
+                    <th data-target="b" data-key="r">R</th>
+                    <th data-target="b" data-key="h">H</th>
+                    <th data-target="b" data-key="doubles">2B</th>
+                    <th data-target="b" data-key="triples">3B</th>
+                    <th data-target="b" data-key="avg">AVG</th>
+                    <th data-target="b" data-key="obp">OBP</th>
+                    <th data-target="b" data-key="slg">SLG</th>
+                    <th data-target="b" data-key="hr">HR</th>
+                    <th data-target="b" data-key="rbi">RBI</th>
+                    <th data-target="b" data-key="sb">SB</th>
+                    <th data-target="b" data-key="cs">CS</th>
+                    <th data-target="b" data-key="bb">BB</th>
+                    <th data-target="b" data-key="so">SO</th>
+                    <th data-target="b" data-key="sh">SH</th>
+                    <th data-target="b" data-key="sf">SF</th>
+                    <th data-target="b" data-key="hbp">HBP</th>
+                    <th data-target="b" data-key="ops">OPS</th>
+                    <th data-target="b" data-key="valueScore">VAL</th>
+                    <th data-target="b" data-key="riskScore">RISK</th>
+                    <th data-target="b" data-key="__tier">Tier</th>
+                  </tr>
+                </thead>
+                <tbody id="b-rows"></tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div id="tab-pitchers" class="tab-content">
+      <div class="tab-stack">
+        <article class="panel">
+          <header class="panel-header"><h2 class="panel-title">投手篩選</h2></header>
+          <div class="panel-body">
+            <div class="control-grid">
+              <div class="field"><label>搜尋</label><input id="p-search" type="text" placeholder="名稱或球隊" /></div>
+              <div class="field"><label>投手角色</label><select id="p-role"><option value="ALL">全部</option><option value="SP">先發 SP</option><option value="RP">後援 RP</option></select></div>
+              <div class="field"><label>Fantasy 類型</label><select id="p-category"><option value="ALL">全部</option><option value="K">三振型 (K/9≥10)</option><option value="QS">品質先發 (QS≥15)</option><option value="CLOSER">終結型 (SV≥20)</option><option value="COMMAND">控球型 (WHIP≤1.10)</option><option value="FA">FA 可簽 (Roster%&lt;80)</option><option value="WATCHLIST">觀察名單</option></select></div>
+              <div class="field"><label>排序</label><select id="p-sort"><option value="valueScore">價值分數</option><option value="riskScore">風險分數</option><option value="netScore" hidden>淨價值分數 (VAL-RISK)</option><option value="w">W</option><option value="qs">QS</option><option value="svh">NSVH</option><option value="k_total">K</option><option value="era">ERA</option><option value="whip">WHIP</option><option value="kbb">K/BB</option><option value="k9">K/9</option><option value="ip">IP</option><option value="sv">SV</option><option value="hld">HLD</option></select></div>
+            </div>
+
+            <div class="mini-kpi">
+              <div class="kpi"><span class="name">平均價值</span><span class="value" id="p-avgVal">-</span><span class="hint">依聯盟玩法加權</span></div>
+              <div class="kpi" id="kpi-p-closer"><span class="name">優質後援投手數</span><span class="value" id="p-closerCount">-</span><span class="hint">後援投手 NSVH ≥ 25</span><button class="kpi-filter-btn" type="button" data-table="p" data-filter="closer">看有哪些球員</button></div>
+              <div class="kpi" id="kpi-p-ace"><span class="name">宰制級先發投手數</span><span class="value" id="p-avgQS">-</span><span class="hint">QS≥20 且 WHIP≤1.10</span><button class="kpi-filter-btn" type="button" data-table="p" data-filter="ace">看有哪些球員</button></div>
+            </div>
+
+            <div class="col-toggle-block">
+              <div class="col-toggle-title">欄位顯示</div>
+              <div class="col-toggle-actions" id="p-col-actions">
+                <button class="col-preset-btn" type="button" data-target="p" data-preset="all">全選</button>
+                <button class="col-preset-btn" type="button" data-target="p" data-preset="none">全不選</button>
+                <button class="col-preset-btn" type="button" data-target="p" data-preset="h2h">只看 H2H</button>
+              </div>
+              <div class="col-toggle-grid" id="p-col-toggle"></div>
+            </div>
+
+            <div class="risk-tuning" id="p-risk-tuning">
+              <div class="risk-tuning-head">
+                <span>風險權重調整 (SP / RP)</span>
+                <span>可任意設定，系統會自動正規化</span>
+              </div>
+              <div class="risk-tuning-grid">
+                <div class="risk-col">
+                  <div class="risk-col-title">SP 權重</div>
+                  <label class="risk-row"><span>ERA</span><input class="risk-input" id="risk-sp-era" type="number" min="0" step="0.01" value="0.30" data-role="sp" data-key="era" /></label>
+                  <label class="risk-row"><span>WHIP</span><input class="risk-input" id="risk-sp-whip" type="number" min="0" step="0.01" value="0.28" data-role="sp" data-key="whip" /></label>
+                  <label class="risk-row"><span>BB/9</span><input class="risk-input" id="risk-sp-bb9" type="number" min="0" step="0.01" value="0.16" data-role="sp" data-key="bb9" /></label>
+                  <label class="risk-row"><span>HR/9</span><input class="risk-input" id="risk-sp-hr9" type="number" min="0" step="0.01" value="0.12" data-role="sp" data-key="hr9" /></label>
+                  <label class="risk-row"><span>QS Rate</span><input class="risk-input" id="risk-sp-qsRate" type="number" min="0" step="0.01" value="0.14" data-role="sp" data-key="qsRate" /></label>
+                </div>
+                <div class="risk-col">
+                  <div class="risk-col-title">RP 權重</div>
+                  <label class="risk-row"><span>ERA</span><input class="risk-input" id="risk-rp-era" type="number" min="0" step="0.01" value="0.24" data-role="rp" data-key="era" /></label>
+                  <label class="risk-row"><span>WHIP</span><input class="risk-input" id="risk-rp-whip" type="number" min="0" step="0.01" value="0.30" data-role="rp" data-key="whip" /></label>
+                  <label class="risk-row"><span>BB/9</span><input class="risk-input" id="risk-rp-bb9" type="number" min="0" step="0.01" value="0.16" data-role="rp" data-key="bb9" /></label>
+                  <label class="risk-row"><span>救援成功率</span><input class="risk-input" id="risk-rp-svConv" type="number" min="0" step="0.01" value="0.20" data-role="rp" data-key="svConv" /></label>
+                  <label class="risk-row"><span>救援份額</span><input class="risk-input" id="risk-rp-roleShare" type="number" min="0" step="0.01" value="0.10" data-role="rp" data-key="roleShare" /></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="legend">
+              <span><i class="dot" style="background:#0f7f53"></i>Ace</span>
+              <span><i class="dot" style="background:#1456b2"></i>Solid</span>
+              <span><i class="dot" style="background:#916a00"></i>Watch</span>
+              <span><i class="dot" style="background:#8a1e1e"></i>Risk</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <header class="panel-header"><h2 class="panel-title">投手排行榜</h2><small id="p-count">0</small></header>
+          <div class="panel-body" style="padding-top:0.4rem;">
+            <div class="kpi-active-bar" id="p-filter-bar"><span id="p-filter-label">篩選中：-</span><button class="kpi-clear-btn" type="button" data-table="p">清除篩選</button></div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th data-target="p" data-key="__star" class="star-col">★</th>
+                    <th data-target="p" data-key="name">PLAYER</th>
+                    <th data-target="p" data-key="team">TEAM</th>
+                    <th data-target="p" data-key="role">ROLE</th>
+                    <th data-target="p" data-key="age">Age</th>
+                    <th data-target="p" data-key="g">G</th>
+                    <th data-target="p" data-key="gs">GS</th>
+                    <th data-target="p" data-key="cg">CG</th>
+                    <th data-target="p" data-key="sho">SHO</th>
+                    <th data-target="p" data-key="ip">IP</th>
+                    <th data-target="p" data-key="h_allowed">H</th>
+                    <th data-target="p" data-key="er">ER</th>
+                    <th data-target="p" data-key="k_total">K</th>
+                    <th data-target="p" data-key="bb">BB</th>
+                    <th data-target="p" data-key="hr_allowed">HR</th>
+                    <th data-target="p" data-key="era">ERA</th>
+                    <th data-target="p" data-key="whip">WHIP</th>
+                    <th data-target="p" data-key="k9">K/9</th>
+                    <th data-target="p" data-key="kbb">K/BB</th>
+                    <th data-target="p" data-key="qs">QS</th>
+                    <th data-target="p" data-key="w">W</th>
+                    <th data-target="p" data-key="l">L</th>
+                    <th data-target="p" data-key="sv">SV</th>
+                    <th data-target="p" data-key="bs">BS</th>
+                    <th data-target="p" data-key="hld">HLD</th>
+                    <th data-target="p" data-key="svh">NSVH</th>
+                    <th data-target="p" data-key="valueScore">VAL</th>
+                    <th data-target="p" data-key="riskScore">RISK</th>
+                    <th data-target="p" data-key="__tier">Tier</th>
+                  </tr>
+                </thead>
+                <tbody id="p-rows"></tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div id="tab-compare" class="tab-content">
+      <article class="panel">
+        <header class="panel-header"><h2 class="panel-title">雙球員數據對比</h2></header>
+        <div class="panel-body compare-grid">
+          <div class="compare-selects">
+            <div class="field"><label>球員 A 類型</label><select id="cmp-typeA"><option value="batter">打者</option><option value="pitcher">投手</option></select></div>
+            <div class="field"><label>球員 B 類型</label><select id="cmp-typeB"><option value="batter">打者</option><option value="pitcher">投手</option></select></div>
+            <div class="field"><label>球員 A</label><input id="cmp-A-search" class="player-search" type="search" placeholder="搜尋球員 A 關鍵字" /><select id="cmp-A"></select></div>
+            <div class="field"><label>球員 B</label><input id="cmp-B-search" class="player-search" type="search" placeholder="搜尋球員 B 關鍵字" /><select id="cmp-B"></select></div>
+          </div>
+
+          <div class="compare-cards">
+            <article class="player-block" id="cmp-cardA"></article>
+            <article class="player-block" id="cmp-cardB"></article>
+          </div>
+
+          <canvas id="radarCanvas" width="1100" height="330" aria-label="球員指標比較圖"></canvas>
+          <div class="insight" id="cmp-insight"></div>
+        </div>
+      </article>
+    </div>
+
+    <div id="tab-trade" class="tab-content">
+      <article class="panel">
+        <header class="panel-header"><h2 class="panel-title">交易模擬器</h2><small>加入球員後即時重算</small></header>
+        <div class="panel-body">
+          <p class="trade-instructions">從下方清單加入我給出與我得到兩側，系統將即時算出總價值差與風險變化。</p>
+
+          <div class="trade-layout">
+            <div class="trade-side">
+              <div class="trade-side-label" style="color:#c93d18;">我給出 (Give)</div>
+              <div class="field"><label>搜尋並加入</label><input id="t-give-search" class="player-search" type="search" placeholder="搜尋給出方球員" /><select id="t-giveSelect"><option value="">選擇球員</option></select></div>
+              <div class="trade-list-box" id="t-giveList"><span style="color:#9ba2b4; margin:auto;">尚未選擇</span></div>
+            </div>
+
+            <div class="trade-divider">
+              <div class="trade-vs">FOR</div>
+              <button class="primary" id="t-calcBtn">重新計算</button>
+            </div>
+
+            <div class="trade-side">
+              <div class="trade-side-label" style="color:#1456b2;">我得到 (Receive)</div>
+              <div class="field"><label>搜尋並加入</label><input id="t-receive-search" class="player-search" type="search" placeholder="搜尋得到方球員" /><select id="t-receiveSelect"><option value="">選擇球員</option></select></div>
+              <div class="trade-list-box" id="t-receiveList"><span style="color:#9ba2b4; margin:auto;">尚未選擇</span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <div class="trade-result" id="tradeResult" style="display:none;">
+        <div class="trade-result-header">
+          <h3 class="panel-title">交易分析報告</h3>
+          <div id="t-verdict-badge"></div>
+        </div>
+
+        <div class="trade-result-body">
+          <div class="trade-compare-row">
+            <div class="trade-stat">
+              <span class="trade-stat-label">我給出 總價值</span>
+              <span class="trade-stat-val" id="t-giveScore" style="color:var(--accent);">-</span>
+            </div>
+
+            <div style="text-align:center;">
+              <div style="font-size:0.75rem; font-weight:800; color:#7a849a; margin-bottom:0.3rem;">VS</div>
+              <div class="trade-bar-wrap">
+                <div class="trade-bar give" id="t-bar-give" style="width:50%;"></div>
+                <div class="trade-bar receive" id="t-bar-receive" style="width:50%;"></div>
+              </div>
+            </div>
+
+            <div class="trade-stat right">
+              <span class="trade-stat-label">我得到 總價值</span>
+              <span class="trade-stat-val" id="t-receiveScore" style="color:var(--accent-2);">-</span>
+            </div>
+          </div>
+
+          <div class="trade-compare-row">
+            <div class="trade-stat"><span class="trade-stat-label" id="t-giveRiskLabel">給出 平均風險</span><span class="trade-stat-val" id="t-giveRisk">-</span></div>
+            <div></div>
+            <div class="trade-stat right"><span class="trade-stat-label" id="t-receiveRiskLabel">得到 平均風險</span><span class="trade-stat-val" id="t-receiveRisk">-</span></div>
+          </div>
+
+          <div class="verdict-box" id="t-verdict"></div>
+        </div>
+      </div>
+    </div>
+
+    <p class="footer-note" id="footerNote">預設使用本地資料庫 CSV，亦可匯入其他 Yahoo league 資料，支援 H2H Categories / H2H Points。</p>
+    <div id="col-tip" class="col-tip" role="tooltip"></div>
+  </main>
+
+  <script>
+    const DEFAULT_BATTERS = [
+      { name: "Ronald Acuna Jr.", team: "ATL", position: "OF", age: 26, g: 159, ab: 643, r: 149, h: 201, doubles: 35, triples: 4, hr: 37, rbi: 98, sb: 63, cs: 14, bb: 80, so: 84, sh: 0, sf: 3, hbp: 9, avg: 0.313, obp: 0.405, slg: 0.607, ops: 1.012, kRate: 11.4, bbRate: 15.6, hardHit: 53.1, rosterPct: 99, trend: "HOT" },
+      { name: "Mookie Betts", team: "LAD", position: "2B/OF", age: 31, g: 152, ab: 584, r: 126, h: 179, doubles: 40, triples: 1, hr: 39, rbi: 107, sb: 14, cs: 2, bb: 96, so: 90, sh: 0, sf: 4, hbp: 8, avg: 0.307, obp: 0.399, slg: 0.588, ops: 0.987, kRate: 15.4, bbRate: 12.8, hardHit: 49.0, rosterPct: 99, trend: "STABLE" },
+      { name: "Shohei Ohtani", team: "LAD", position: "UTIL", age: 29, g: 135, ab: 497, r: 102, h: 151, doubles: 26, triples: 8, hr: 44, rbi: 95, sb: 20, cs: 4, bb: 91, so: 143, sh: 0, sf: 4, hbp: 3, avg: 0.304, obp: 0.412, slg: 0.654, ops: 1.066, kRate: 24.7, bbRate: 14.4, hardHit: 57.2, rosterPct: 99, trend: "HOT" },
+      { name: "Bobby Witt Jr.", team: "KC", position: "SS", age: 24, g: 158, ab: 642, r: 97, h: 177, doubles: 31, triples: 11, hr: 30, rbi: 96, sb: 49, cs: 10, bb: 47, so: 113, sh: 0, sf: 4, hbp: 2, avg: 0.276, obp: 0.322, slg: 0.546, ops: 0.868, kRate: 17.2, bbRate: 6.6, hardHit: 45.8, rosterPct: 99, trend: "HOT" },
+      { name: "Julio Rodriguez", team: "SEA", position: "OF", age: 23, g: 155, ab: 654, r: 102, h: 182, doubles: 37, triples: 2, hr: 32, rbi: 103, sb: 37, cs: 6, bb: 45, so: 182, sh: 0, sf: 5, hbp: 6, avg: 0.278, obp: 0.321, slg: 0.523, ops: 0.844, kRate: 27.8, bbRate: 6.2, hardHit: 50.1, rosterPct: 98, trend: "STABLE" },
+      { name: "Corey Seager", team: "TEX", position: "SS", age: 30, g: 119, ab: 477, r: 88, h: 155, doubles: 42, triples: 0, hr: 33, rbi: 96, sb: 2, cs: 1, bb: 58, so: 81, sh: 0, sf: 5, hbp: 4, avg: 0.325, obp: 0.402, slg: 0.611, ops: 1.013, kRate: 17.0, bbRate: 10.9, hardHit: 54.5, rosterPct: 99, trend: "HOT" },
+      { name: "Elly De La Cruz", team: "CIN", position: "SS", age: 22, g: 155, ab: 578, r: 105, h: 143, doubles: 28, triples: 9, hr: 18, rbi: 67, sb: 58, cs: 16, bb: 56, so: 195, sh: 0, sf: 3, hbp: 12, avg: 0.248, obp: 0.338, slg: 0.445, ops: 0.783, kRate: 33.7, bbRate: 8.9, hardHit: 45.1, rosterPct: 95, trend: "HOT" },
+      { name: "Yordan Alvarez", team: "HOU", position: "OF", age: 27, g: 143, ab: 522, r: 95, h: 153, doubles: 34, triples: 1, hr: 35, rbi: 109, sb: 2, cs: 1, bb: 77, so: 98, sh: 0, sf: 6, hbp: 8, avg: 0.293, obp: 0.392, slg: 0.573, ops: 0.965, kRate: 18.8, bbRate: 12.6, hardHit: 56.0, rosterPct: 99, trend: "STABLE" },
+      { name: "Cal Raleigh", team: "SEA", position: "C", age: 27, g: 154, ab: 592, r: 95, h: 146, doubles: 28, triples: 1, hr: 60, rbi: 125, sb: 14, cs: 3, bb: 111, so: 186, sh: 0, sf: 8, hbp: 7, avg: 0.247, obp: 0.353, slg: 0.595, ops: 0.948, kRate: 31.5, bbRate: 16.2, hardHit: 52.0, rosterPct: 98, trend: "HOT" },
+      { name: "Aaron Judge", team: "NYY", position: "OF", age: 32, g: 148, ab: 557, r: 122, h: 184, doubles: 31, triples: 1, hr: 53, rbi: 114, sb: 12, cs: 1, bb: 133, so: 165, sh: 0, sf: 4, hbp: 9, avg: 0.331, obp: 0.458, slg: 0.687, ops: 1.145, kRate: 29.6, bbRate: 22.9, hardHit: 61.0, rosterPct: 99, trend: "HOT" }
+    ];
+
+    const DEFAULT_PITCHERS = [
+      { name: "Gerrit Cole", team: "NYY", role: "SP", position: "SP", age: 33, g: 33, gs: 33, cg: 2, sho: 1, ip: 209, h_allowed: 168, er: 66, k_total: 256, bb: 48, hbp: 0, hr_allowed: 20, era: 2.84, whip: 1.04, k9: 11.0, qs: 22, w: 15, l: 4, sv: 0, bs: 0, hld: 0, svh: 0, rosterPct: 99, trend: "STABLE" },
+      { name: "Logan Webb", team: "SF", role: "SP", position: "SP", age: 27, g: 34, gs: 34, cg: 1, sho: 0, ip: 219, h_allowed: 193, er: 76, k_total: 197, bb: 42, hbp: 0, hr_allowed: 18, era: 3.12, whip: 1.08, k9: 8.1, qs: 24, w: 18, l: 8, sv: 0, bs: 0, hld: 0, svh: 0, rosterPct: 99, trend: "STABLE" },
+      { name: "Spencer Strider", team: "ATL", role: "SP", position: "SP", age: 25, g: 32, gs: 32, cg: 0, sho: 0, ip: 186, h_allowed: 132, er: 64, k_total: 277, bb: 58, hbp: 0, hr_allowed: 23, era: 3.1, whip: 1.02, k9: 13.4, qs: 18, w: 13, l: 6, sv: 0, bs: 0, hld: 0, svh: 0, rosterPct: 99, trend: "HOT" },
+      { name: "Corbin Burnes", team: "BAL", role: "SP", position: "SP", age: 29, g: 33, gs: 33, cg: 0, sho: 0, ip: 208, h_allowed: 171, er: 68, k_total: 226, bb: 55, hbp: 0, hr_allowed: 19, era: 2.96, whip: 1.07, k9: 9.8, qs: 21, w: 14, l: 8, sv: 0, bs: 0, hld: 0, svh: 0, rosterPct: 98, trend: "STABLE" },
+      { name: "Ryan Helsley", team: "STL", role: "RP", position: "RP", age: 29, g: 58, gs: 0, cg: 0, sho: 0, ip: 52, h_allowed: 35, er: 9, k_total: 74, bb: 18, hbp: 0, hr_allowed: 3, era: 1.55, whip: 0.92, k9: 12.8, qs: 0, w: 4, l: 3, sv: 43, bs: 4, hld: 3, svh: 46, rosterPct: 99, trend: "HOT" },
+      { name: "Emmanuel Clase", team: "CLE", role: "RP", position: "RP", age: 26, g: 74, gs: 0, cg: 0, sho: 0, ip: 66, h_allowed: 45, er: 10, k_total: 62, bb: 10, hbp: 0, hr_allowed: 4, era: 1.36, whip: 0.9, k9: 8.4, qs: 0, w: 4, l: 5, sv: 42, bs: 3, hld: 3, svh: 45, rosterPct: 99, trend: "STABLE" },
+      { name: "Josh Hader", team: "HOU", role: "RP", position: "RP", age: 30, g: 62, gs: 0, cg: 0, sho: 0, ip: 51, h_allowed: 29, er: 11, k_total: 80, bb: 20, hbp: 0, hr_allowed: 4, era: 1.98, whip: 0.85, k9: 14.1, qs: 0, w: 3, l: 2, sv: 34, bs: 3, hld: 4, svh: 38, rosterPct: 99, trend: "HOT" },
+      { name: "Edwin Diaz", team: "NYM", role: "RP", position: "RP", age: 30, g: 56, gs: 0, cg: 0, sho: 0, ip: 49, h_allowed: 36, er: 17, k_total: 77, bb: 22, hbp: 0, hr_allowed: 5, era: 3.12, whip: 1.18, k9: 14.2, qs: 0, w: 3, l: 4, sv: 28, bs: 4, hld: 3, svh: 31, rosterPct: 89, trend: "HOT" }
+    ];
+
+    let batters = DEFAULT_BATTERS.map(p => ({ ...p, playerType: "batter" }));
+    let pitchers = DEFAULT_PITCHERS.map(p => ({ ...p, playerType: "pitcher" }));
+
+    const bState = { search: "", position: "ALL", category: "ALL", sortBy: "valueScore", sortDir: -1, filtered: [], kpiFilter: null };
+    const pState = { search: "", role: "ALL", category: "ALL", sortBy: "valueScore", sortDir: -1, filtered: [], kpiFilter: null };
+    const tradeState = { give: [], receive: [] };
+    const columnState = { b: {}, p: {} };
+    const watchlist = new Set();
+    const WATCHLIST_STORAGE_KEY = "yahoo-fantasy-watchlist-v1";
+    let gameMode = "categories";
+    const columnPresets = {
+      b: {
+        h2h_cat: new Set(["name", "team", "position", "r", "h", "hr", "rbi", "sb", "avg", "ops", "valueScore", "__tier"]),
+        h2h_points: new Set(["name", "team", "position", "r", "h", "doubles", "triples", "hr", "rbi", "sb", "bb", "hbp", "valueScore", "riskScore", "__tier"])
+      },
+      p: {
+        h2h_cat: new Set(["name", "team", "role", "w", "k_total", "era", "whip", "kbb", "qs", "svh", "valueScore", "__tier"]),
+        h2h_points: new Set(["name", "team", "role", "w", "sv", "ip", "h_allowed", "er", "bb", "k_total", "valueScore", "riskScore", "__tier"])
+      }
+    };
+    const riskTuning = {
+      sp: { era: 0.30, whip: 0.28, bb9: 0.16, hr9: 0.12, qsRate: 0.14 },
+      rp: { era: 0.24, whip: 0.30, bb9: 0.16, svConv: 0.20, roleShare: 0.10 }
+    };
+    const STAT_TIPS = {
+      name: "球員名稱。\n公式：N/A",
+      team: "球隊代碼。\n公式：N/A",
+      position: "守位資格。\n公式：N/A",
+      role: "先發/後援角色。\n公式：N/A",
+      age: "球員年齡。\n公式：N/A",
+      g: "出賽場次。\n公式：N/A",
+      ab: "累積打數。\n公式：N/A",
+      r: "得分能力。\n公式：N/A",
+      h: "安打能力。\n公式：N/A",
+      doubles: "二壘安打量。\n公式：N/A",
+      triples: "三壘安打量。\n公式：N/A",
+      avg: "打擊率表現。\n公式：H/AB",
+      obp: "上壘率表現。\n公式：(H+BB+HBP)/(AB+BB+HBP+SF)",
+      slg: "長打率表現。\n公式：TB/AB",
+      hr: "全壘打火力。\n公式：N/A",
+      rbi: "打點能力。\n公式：N/A",
+      sb: "盜壘能力。\n公式：N/A",
+      cs: "盜壘失敗率。\n公式：N/A",
+      bb: "選球保送。\n公式：N/A",
+      so: "三振風險。\n公式：N/A",
+      sh: "犧牲短打。\n公式：N/A",
+      sf: "犧牲打能力。\n公式：N/A",
+      hbp: "觸身上壘。\n公式：N/A",
+      ops: "整體攻擊值。\n公式：OBP+SLG",
+      gs: "先發場次。\n公式：N/A",
+      cg: "完投能力。\n公式：N/A",
+      sho: "完封能力。\n公式：N/A",
+      ip: "投球局數。\n公式：N/A",
+      h_allowed: "被安打量。\n公式：N/A",
+      er: "責失分量。\n公式：N/A",
+      k_total: "奪三振量。\n公式：N/A",
+      hr_allowed: "被轟風險。\n公式：N/A",
+      era: "防禦率品質。\n公式：ER*9/IP",
+      whip: "每局被上壘率。\n公式：(BB+H)/IP",
+      k9: "每九局三振。\n公式：K*9/IP",
+      qs: "品質先發。\n公式：IP>=6 且 ER<=3",
+      w: "勝投結果。\n公式：N/A",
+      l: "敗投結果。\n公式：N/A",
+      sv: "救援成功。\n公式：N/A",
+      bs: "救援失敗。\n公式：N/A",
+      hld: "中繼成功。\n公式：N/A",
+      svh: "後援貢獻量(NSVH)。\n公式：SV+HLD",
+      kbb: "三振保送比。\n公式：K/BB（越高越好）",
+      valueScore: "價值分數。\n公式：模式正規化 0-100",
+      riskScore: "風險分數。\n公式：模式加權 0-100",
+      __tier: "分級區間。\n公式：PR95/75/60"
+    };
+    let databaseBatters = null;
+    let databasePitchers = null;
+    let _cmpAllA = [];
+    let _cmpAllB = [];
+    let _tradeAllOptions = [];
+
+    function esc(v) {
+      return String(v)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function filterSelectOptions(selectEl, keyword, allOptions, prevVal) {
+      if (!selectEl) return;
+      const kw = String(keyword || "").trim().toLowerCase();
+      const filtered = kw
+        ? allOptions.filter(opt => opt.search.includes(kw))
+        : allOptions;
+
+      selectEl.innerHTML = filtered
+        .map(opt => `<option value="${esc(opt.value)}">${esc(opt.label)}</option>`)
+        .join("");
+
+      if (filtered.some(opt => opt.value === prevVal)) {
+        selectEl.value = prevVal;
+      } else if (filtered.length) {
+        selectEl.value = filtered[0].value;
+      }
+    }
+
+    function filterTradeSelect(selectId, keyword) {
+      const selectEl = document.getElementById(selectId);
+      if (!selectEl) return;
+      const prevVal = selectEl.value;
+      const kw = String(keyword || "").trim().toLowerCase();
+      const filtered = kw
+        ? _tradeAllOptions.filter(opt => opt.search.includes(kw))
+        : _tradeAllOptions;
+
+      selectEl.innerHTML = `<option value="">選擇球員</option>${filtered
+        .map(opt => `<option value="${esc(opt.value)}">${esc(opt.label)}</option>`)
+        .join("")}`;
+
+      if (prevVal && filtered.some(opt => opt.value === prevVal)) {
+        selectEl.value = prevVal;
+      } else {
+        selectEl.value = "";
+      }
+    }
+
+    function norm(v, min, max) {
+      if (max === min) return 50;
+      return ((v - min) / (max - min)) * 100;
+    }
+
+    function minOf(arr, key) { return Math.min(...arr.map(p => p[key])); }
+    function maxOf(arr, key) { return Math.max(...arr.map(p => p[key])); }
+
+    function assignTiersByPR(list, getBasis, isPitcher) {
+      if (!list.length) return;
+      const basisMap = new Map();
+      list.forEach(p => basisMap.set(p, safeNum(getBasis(p))));
+      const sorted = Array.from(basisMap.values()).sort((a, b) => a - b);
+      const n = sorted.length;
+
+      list.forEach(p => {
+        const score = basisMap.get(p);
+        let lower = 0;
+        while (lower < n && sorted[lower] < score) lower += 1;
+        let equal = 0;
+        while ((lower + equal) < n && sorted[lower + equal] === score) equal += 1;
+
+        const avgRank = lower + (equal + 1) / 2;
+        const pr = n <= 1 ? 100 : (avgRank / n) * 100;
+
+        if (pr >= 95) {
+          p.tier = isPitcher ? "Ace" : "Elite";
+          p.tierClass = "s-elite";
+        } else if (pr >= 75) {
+          p.tier = "Solid";
+          p.tierClass = "s-solid";
+        } else if (pr >= 60) {
+          p.tier = "Watch";
+          p.tierClass = "s-watch";
+        } else {
+          p.tier = "Risk";
+          p.tierClass = "s-risk";
+        }
+      });
+    }
+
+    function computeBatterScores(list) {
+      if (!list.length) return;
+      const mn = key => minOf(list, key);
+      const mx = key => maxOf(list, key);
+      const w = 1 / 7;
+
+      const dMin = Math.min(...list.map(p => p.bbRate - p.kRate / 2));
+      const dMax = Math.max(...list.map(p => p.bbRate - p.kRate / 2));
+
+      list.forEach(p => {
+        const kPenalty = 100 - norm(p.kRate, mn("kRate"), mx("kRate"));
+        const csRate = (safeNum(p.sb) + safeNum(p.cs)) > 0 ? safeNum(p.cs) / (safeNum(p.sb) + safeNum(p.cs)) : 0;
+        const playTimePenalty = 100 - norm(safeNum(p.g), mn("g"), mx("g"));
+        const csPenalty = norm(csRate, 0, 0.6);
+
+        p.valueScore = Math.round(
+          norm(p.r, mn("r"), mx("r")) * w +
+          norm(p.h, mn("h"), mx("h")) * w +
+          norm(p.hr, mn("hr"), mx("hr")) * w +
+          norm(p.rbi, mn("rbi"), mx("rbi")) * w +
+          norm(p.sb, mn("sb"), mx("sb")) * w +
+          norm(p.avg, mn("avg"), mx("avg")) * w +
+          norm(p.ops, mn("ops"), mx("ops")) * w
+        );
+
+        p.riskScore = Math.round(100 - (
+          kPenalty * 0.42 +
+          norm(p.bbRate, mn("bbRate"), mx("bbRate")) * 0.26 +
+          norm(p.bbRate - p.kRate / 2, dMin, dMax) * 0.18 +
+          (100 - csPenalty) * 0.08 +
+          (100 - playTimePenalty) * 0.06
+        ));
+
+        p.riskScore = Math.max(0, Math.min(100, p.riskScore));
+        p.riskScore = null;
+      });
+
+      assignTiersByPR(list, p => p.valueScore, false);
+    }
+
+    function computeBatterPointsScores(list) {
+      if (!list.length) return;
+      const rawPts = [];
+      list.forEach(p => {
+        const singles = Math.max(0, safeNum(p.h) - safeNum(p.doubles) - safeNum(p.triples) - safeNum(p.hr));
+        const points =
+          safeNum(p.r) * 1.9 +
+          singles * 2.6 +
+          safeNum(p.doubles) * 5.2 +
+          safeNum(p.triples) * 7.8 +
+          safeNum(p.hr) * 10.4 +
+          safeNum(p.rbi) * 1.9 +
+          safeNum(p.sb) * 4.2 +
+          safeNum(p.bb) * 2.6 +
+          safeNum(p.hbp) * 2.6;
+        rawPts.push(points);
+      });
+
+      const minPts = Math.min(...rawPts);
+      const maxPts = Math.max(...rawPts);
+      const mn = key => minOf(list, key);
+      const mx = key => maxOf(list, key);
+      const dMin = Math.min(...list.map(p => p.bbRate - p.kRate / 2));
+      const dMax = Math.max(...list.map(p => p.bbRate - p.kRate / 2));
+
+      list.forEach((p, idx) => {
+        p.valueScore = Math.round(norm(rawPts[idx], minPts, maxPts));
+
+        const kPenalty = 100 - norm(p.kRate, mn("kRate"), mx("kRate"));
+        const csRate = (safeNum(p.sb) + safeNum(p.cs)) > 0 ? safeNum(p.cs) / (safeNum(p.sb) + safeNum(p.cs)) : 0;
+        const playTimePenalty = 100 - norm(safeNum(p.g), mn("g"), mx("g"));
+        const csPenalty = norm(csRate, 0, 0.6);
+
+        p.riskScore = Math.round(100 - (
+          kPenalty * 0.42 +
+          norm(p.bbRate, mn("bbRate"), mx("bbRate")) * 0.26 +
+          norm(p.bbRate - p.kRate / 2, dMin, dMax) * 0.18 +
+          (100 - csPenalty) * 0.08 +
+          (100 - playTimePenalty) * 0.06
+        ));
+        p.riskScore = Math.max(0, Math.min(100, p.riskScore));
+      });
+
+      assignTiersByPR(list, p => p.valueScore - safeNum(p.riskScore), false);
+    }
+
+    function computePitcherScores(list) {
+      if (!list.length) return;
+      list.forEach(p => {
+        p.kbb = safeNum(p.bb) > 0 ? safeNum(p.k_total) / safeNum(p.bb) : safeNum(p.k_total);
+      });
+      const mn = key => minOf(list, key);
+      const mx = key => maxOf(list, key);
+      const w = 1 / 7;
+      const normalizeWeights = src => {
+        const values = Object.values(src).map(v => Math.max(0, safeNum(v)));
+        const sum = values.reduce((s, v) => s + v, 0);
+        if (!sum) {
+          const n = values.length || 1;
+          const even = 1 / n;
+          return Object.fromEntries(Object.keys(src).map(k => [k, even]));
+        }
+        const out = {};
+        Object.keys(src).forEach(k => {
+          out[k] = Math.max(0, safeNum(src[k])) / sum;
+        });
+        return out;
+      };
+      const spW = normalizeWeights(riskTuning.sp);
+      const rpW = normalizeWeights(riskTuning.rp);
+
+      const spList = list.filter(p => p.role === "SP");
+      const rpList = list.filter(p => p.role === "RP");
+
+      const roleNorm = (arr, getter, v) => {
+        if (!arr.length) return 50;
+        const values = arr.map(getter);
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        return norm(v, min, max);
+      };
+
+      list.forEach(p => {
+        const eraS = 100 - norm(p.era, mn("era"), mx("era"));
+        const whipS = 100 - norm(p.whip, mn("whip"), mx("whip"));
+        const kS = norm(p.k_total, mn("k_total"), mx("k_total"));
+        const qsS = norm(p.qs, mn("qs"), mx("qs"));
+        const svhS = norm(p.svh, mn("svh"), mx("svh"));
+        const kbbS = norm(p.kbb, mn("kbb"), mx("kbb"));
+        const wS = norm(p.w, mn("w"), mx("w"));
+
+        p.valueScore = Math.round(
+          eraS * w +
+          whipS * w +
+          kS * w +
+          kbbS * w +
+          qsS * w +
+          svhS * w +
+          wS * w
+        );
+
+        p.riskScore = Math.round(
+          (() => {
+            if (p.role === "SP") {
+              const bb9 = safeNum(p.ip) > 0 ? (safeNum(p.bb) / safeNum(p.ip)) * 9 : 0;
+              const hr9 = safeNum(p.ip) > 0 ? (safeNum(p.hr_allowed) / safeNum(p.ip)) * 9 : 0;
+              const qsRate = safeNum(p.gs) > 0 ? safeNum(p.qs) / safeNum(p.gs) : 0;
+              return (
+                roleNorm(spList, x => safeNum(x.era), safeNum(p.era)) * spW.era +
+                roleNorm(spList, x => safeNum(x.whip), safeNum(p.whip)) * spW.whip +
+                roleNorm(spList, x => (safeNum(x.ip) > 0 ? (safeNum(x.bb) / safeNum(x.ip)) * 9 : 0), bb9) * spW.bb9 +
+                roleNorm(spList, x => (safeNum(x.ip) > 0 ? (safeNum(x.hr_allowed) / safeNum(x.ip)) * 9 : 0), hr9) * spW.hr9 +
+                (100 - roleNorm(spList, x => (safeNum(x.gs) > 0 ? safeNum(x.qs) / safeNum(x.gs) : 0), qsRate)) * spW.qsRate
+              );
+            }
+
+            const svOp = safeNum(p.sv) + safeNum(p.bs);
+            const svConv = svOp > 0 ? safeNum(p.sv) / svOp : 0.5;
+            const roleShare = safeNum(p.g) > 0 ? safeNum(p.svh) / safeNum(p.g) : 0;
+            const bb9 = safeNum(p.ip) > 0 ? (safeNum(p.bb) / safeNum(p.ip)) * 9 : 0;
+
+            return (
+              roleNorm(rpList, x => safeNum(x.era), safeNum(p.era)) * rpW.era +
+              roleNorm(rpList, x => safeNum(x.whip), safeNum(p.whip)) * rpW.whip +
+              roleNorm(rpList, x => (safeNum(x.ip) > 0 ? (safeNum(x.bb) / safeNum(x.ip)) * 9 : 0), bb9) * rpW.bb9 +
+              (100 - roleNorm(rpList, x => (safeNum(x.sv) + safeNum(x.bs)) > 0 ? safeNum(x.sv) / (safeNum(x.sv) + safeNum(x.bs)) : 0.5, svConv)) * rpW.svConv +
+              (100 - roleNorm(rpList, x => safeNum(x.g) > 0 ? safeNum(x.svh) / safeNum(x.g) : 0, roleShare)) * rpW.roleShare
+            );
+          })()
+        );
+
+        p.riskScore = Math.max(0, Math.min(100, p.riskScore));
+        p.riskScore = null;
+      });
+
+      assignTiersByPR(list, p => p.valueScore, true);
+    }
+
+    function computePitcherPointsScores(list) {
+      if (!list.length) return;
+      list.forEach(p => {
+        p.kbb = safeNum(p.bb) > 0 ? safeNum(p.k_total) / safeNum(p.bb) : safeNum(p.k_total);
+      });
+      const rawPts = list.map(p => {
+        const outs = safeNum(p.ip) * 3;
+        return (
+          safeNum(p.w) * 8 +
+          safeNum(p.sv) * 8 +
+          outs * 1 +
+          safeNum(p.h_allowed) * -1.3 +
+          safeNum(p.er) * -3 +
+          safeNum(p.bb) * -1.3 +
+          safeNum(p.hbp) * -1.3 +
+          safeNum(p.k_total) * 3
+        );
+      });
+      const minPts = Math.min(...rawPts);
+      const maxPts = Math.max(...rawPts);
+
+      const mn = key => minOf(list, key);
+      const mx = key => maxOf(list, key);
+      const normalizeWeights = src => {
+        const values = Object.values(src).map(v => Math.max(0, safeNum(v)));
+        const sum = values.reduce((s, v) => s + v, 0);
+        if (!sum) {
+          const n = values.length || 1;
+          const even = 1 / n;
+          return Object.fromEntries(Object.keys(src).map(k => [k, even]));
+        }
+        const out = {};
+        Object.keys(src).forEach(k => {
+          out[k] = Math.max(0, safeNum(src[k])) / sum;
+        });
+        return out;
+      };
+      const spW = normalizeWeights(riskTuning.sp);
+      const rpW = normalizeWeights(riskTuning.rp);
+
+      const spList = list.filter(p => p.role === "SP");
+      const rpList = list.filter(p => p.role === "RP");
+
+      const roleNorm = (arr, getter, v) => {
+        if (!arr.length) return 50;
+        const values = arr.map(getter);
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        return norm(v, min, max);
+      };
+
+      list.forEach((p, idx) => {
+        p.valueScore = Math.round(norm(rawPts[idx], minPts, maxPts));
+
+        p.riskScore = Math.round(
+          (() => {
+            if (p.role === "SP") {
+              const bb9 = safeNum(p.ip) > 0 ? (safeNum(p.bb) / safeNum(p.ip)) * 9 : 0;
+              const hr9 = safeNum(p.ip) > 0 ? (safeNum(p.hr_allowed) / safeNum(p.ip)) * 9 : 0;
+              const qsRate = safeNum(p.gs) > 0 ? safeNum(p.qs) / safeNum(p.gs) : 0;
+              return (
+                roleNorm(spList, x => safeNum(x.era), safeNum(p.era)) * spW.era +
+                roleNorm(spList, x => safeNum(x.whip), safeNum(p.whip)) * spW.whip +
+                roleNorm(spList, x => (safeNum(x.ip) > 0 ? (safeNum(x.bb) / safeNum(x.ip)) * 9 : 0), bb9) * spW.bb9 +
+                roleNorm(spList, x => (safeNum(x.ip) > 0 ? (safeNum(x.hr_allowed) / safeNum(x.ip)) * 9 : 0), hr9) * spW.hr9 +
+                (100 - roleNorm(spList, x => (safeNum(x.gs) > 0 ? safeNum(x.qs) / safeNum(x.gs) : 0), qsRate)) * spW.qsRate
+              );
+            }
+
+            const svOp = safeNum(p.sv) + safeNum(p.bs);
+            const svConv = svOp > 0 ? safeNum(p.sv) / svOp : 0.5;
+            const roleShare = safeNum(p.g) > 0 ? safeNum(p.svh) / safeNum(p.g) : 0;
+            const bb9 = safeNum(p.ip) > 0 ? (safeNum(p.bb) / safeNum(p.ip)) * 9 : 0;
+
+            return (
+              roleNorm(rpList, x => safeNum(x.era), safeNum(p.era)) * rpW.era +
+              roleNorm(rpList, x => safeNum(x.whip), safeNum(p.whip)) * rpW.whip +
+              roleNorm(rpList, x => (safeNum(x.ip) > 0 ? (safeNum(x.bb) / safeNum(x.ip)) * 9 : 0), bb9) * rpW.bb9 +
+              (100 - roleNorm(rpList, x => (safeNum(x.sv) + safeNum(x.bs)) > 0 ? safeNum(x.sv) / (safeNum(x.sv) + safeNum(x.bs)) : 0.5, svConv)) * rpW.svConv +
+              (100 - roleNorm(rpList, x => safeNum(x.g) > 0 ? safeNum(x.svh) / safeNum(x.g) : 0, roleShare)) * rpW.roleShare
+            );
+          })()
+        );
+
+        p.riskScore = Math.max(0, Math.min(100, p.riskScore));
+      });
+
+      assignTiersByPR(list, p => p.valueScore - safeNum(p.riskScore), true);
+    }
+
+    function computeAllScores() {
+      if (gameMode === "points") {
+        computeBatterPointsScores(batters);
+        computePitcherPointsScores(pitchers);
+      } else {
+        computeBatterScores(batters);
+        computePitcherScores(pitchers);
+      }
+      batters.forEach(p => {
+        p.netScore = safeNum(p.valueScore) - safeNum(p.riskScore);
+      });
+      pitchers.forEach(p => {
+        p.netScore = safeNum(p.valueScore) - safeNum(p.riskScore);
+      });
+    }
+
+    function syncModeControls() {
+      const isPoints = gameMode === "points";
+      const riskBlock = document.getElementById("p-risk-tuning");
+      const giveRiskLabel = document.getElementById("t-giveRiskLabel");
+      const receiveRiskLabel = document.getElementById("t-receiveRiskLabel");
+      if (riskBlock) {
+        riskBlock.style.display = isPoints ? "" : "none";
+      }
+
+      if (giveRiskLabel) giveRiskLabel.textContent = isPoints ? "給出 平均風險" : "給出 風險指標";
+      if (receiveRiskLabel) receiveRiskLabel.textContent = isPoints ? "得到 平均風險" : "得到 風險指標";
+
+      [
+        { selId: "b-sort", state: bState },
+        { selId: "p-sort", state: pState }
+      ].forEach(({ selId, state }) => {
+        const sel = document.getElementById(selId);
+        if (!sel) return;
+        const riskOpt = sel.querySelector("option[value='riskScore']");
+        if (riskOpt) {
+          riskOpt.hidden = !isPoints;
+          riskOpt.disabled = !isPoints;
+        }
+        const netOpt = sel.querySelector("option[value='netScore']");
+        if (netOpt) {
+          netOpt.hidden = !isPoints;
+          netOpt.disabled = !isPoints;
+        }
+        if (!isPoints && (state.sortBy === "riskScore" || state.sortBy === "netScore")) {
+          state.sortBy = "valueScore";
+          state.sortDir = -1;
+          sel.value = "valueScore";
+        }
+      });
+    }
+
+    function toNum(v) {
+      if (v === null || v === undefined || v === "") return 0;
+      const n = parseFloat(String(v).replace(/%/g, ""));
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function safeNum(v) {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function parseCsv(text) {
+      const lines = text.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+      if (lines.length < 2) throw new Error("CSV 至少需要標題與一列資料");
+
+      const headers = lines[0].split(",").map(x => x.trim().toLowerCase().replace(/[%/\s+]/g, ""));
+      const idx = keyList => {
+        for (const k of keyList) {
+          const i = headers.indexOf(k);
+          if (i !== -1) return i;
+        }
+        return -1;
+      };
+      const getVal = (cols, keyList) => {
+        const i = idx(keyList);
+        return i === -1 ? "" : (cols[i] || "").trim();
+      };
+
+      const hasEra = idx(["era"]) !== -1;
+      const hasWhip = idx(["whip"]) !== -1;
+      const isPitcherFile = hasEra || hasWhip;
+
+      const parsedBatters = [];
+      const parsedPitchers = [];
+
+      for (let r = 1; r < lines.length; r += 1) {
+        const cols = lines[r].split(",");
+        if (cols.length < 3) continue;
+
+        const name = getVal(cols, ["player", "name", "playername"]);
+        if (!name) continue;
+
+        const team = getVal(cols, ["team", "tm"]) || "?";
+        const pos = getVal(cols, ["pos", "position", "eligible"]) || "?";
+        const trend = (getVal(cols, ["trend"]) || "STABLE").toUpperCase();
+        const rosterPct = toNum(getVal(cols, ["roster", "rosterpct", "rostered", "rosteredpct", "roster%"])) || 0;
+
+        if (isPitcherFile) {
+          const age = toNum(getVal(cols, ["age"]));
+          const g = toNum(getVal(cols, ["g", "games"]));
+          const gs = toNum(getVal(cols, ["gs", "gamestarts"]));
+          const cg = toNum(getVal(cols, ["cg"]));
+          const sho = toNum(getVal(cols, ["sho"]));
+          const ip = toNum(getVal(cols, ["ip", "inningspitched"]));
+          const hAllowed = toNum(getVal(cols, ["h", "hits"]));
+          const er = toNum(getVal(cols, ["er"]));
+          const era = toNum(getVal(cols, ["era"]));
+          const kRaw = toNum(getVal(cols, ["k", "so", "strikeouts"]));
+          const bb = toNum(getVal(cols, ["bb"]));
+          const hrAllowed = toNum(getVal(cols, ["hr", "homeruns"]));
+          const w = toNum(getVal(cols, ["w", "wins"]));
+          const l = toNum(getVal(cols, ["l", "losses"]));
+          const sv = toNum(getVal(cols, ["sv", "saves"]));
+          const bs = toNum(getVal(cols, ["bs"]));
+          const hld = toNum(getVal(cols, ["hld", "holds"]));
+          let qs = toNum(getVal(cols, ["qs", "qualitystarts"]));
+          let k9 = toNum(getVal(cols, ["k9", "k/9", "kpernine"]));
+
+          if (!k9 && ip > 0 && kRaw > 0) {
+            k9 = (kRaw / ip) * 9;
+          }
+
+          const svh = toNum(getVal(cols, ["svh", "sv+h", "saveplushold", "svph"])) || (sv + hld);
+          const starterByUsage = g > 0 ? (gs / g) >= 0.5 : gs > 0;
+          const role = pos.includes("SP") ? "SP" : (pos.includes("RP") ? "RP" : (starterByUsage ? "SP" : "RP"));
+
+          if (!qs && role === "SP" && gs > 0) {
+            const qsRate = Math.max(0.2, 0.75 - Math.max(0, era - 3) * 0.12);
+            qs = Math.round(gs * qsRate);
+          }
+
+          parsedPitchers.push({
+            name,
+            team,
+            position: pos,
+            role,
+            age,
+            g,
+            gs,
+            cg,
+            sho,
+            h_allowed: hAllowed,
+            er,
+            k_total: kRaw,
+            bb,
+            kbb: bb > 0 ? kRaw / bb : kRaw,
+            hbp: toNum(getVal(cols, ["hbp", "hitbypitch"])),
+            hr_allowed: hrAllowed,
+            era,
+            whip: toNum(getVal(cols, ["whip"])),
+            k9,
+            qs,
+            w,
+            l,
+            sv,
+            bs,
+            hld,
+            svh,
+            ip,
+            rosterPct,
+            trend,
+            playerType: "pitcher"
+          });
+        } else {
+          const age = toNum(getVal(cols, ["age"]));
+          const g = toNum(getVal(cols, ["g", "games"]));
+          const ab = toNum(getVal(cols, ["ab"]));
+          const rVal = toNum(getVal(cols, ["r", "runs"]));
+          const h = toNum(getVal(cols, ["h", "hits"]));
+          const doubles = toNum(getVal(cols, ["2b", "doubles"]));
+          const triples = toNum(getVal(cols, ["3b", "triples"]));
+          const so = toNum(getVal(cols, ["so", "k"]));
+          const cs = toNum(getVal(cols, ["cs"]));
+          const bb = toNum(getVal(cols, ["bb"]));
+          const sh = toNum(getVal(cols, ["sh"]));
+          const sf = toNum(getVal(cols, ["sf"]));
+          const hbp = toNum(getVal(cols, ["hbp"]));
+          const avg = toNum(getVal(cols, ["avg", "ba", "battingavg"]));
+          const obp = toNum(getVal(cols, ["obp"]));
+          const slg = toNum(getVal(cols, ["slg"]));
+          const ops = toNum(getVal(cols, ["ops"]));
+
+          const kRateRaw = toNum(getVal(cols, ["krate", "kpct", "k%"])) || (ab > 0 ? (so / ab) * 100 : 0);
+          const bbRateRaw = toNum(getVal(cols, ["bbrate", "bbpct", "bb%"])) || (ab > 0 ? (bb / ab) * 100 : 0);
+
+          parsedBatters.push({
+            name,
+            team,
+            position: pos,
+            age,
+            g,
+            ab,
+            r: rVal,
+            h,
+            doubles,
+            triples,
+            avg,
+            obp,
+            slg,
+            hr: toNum(getVal(cols, ["hr", "homeruns"])),
+            rbi: toNum(getVal(cols, ["rbi"])),
+            sb: toNum(getVal(cols, ["sb", "stolenbases"])),
+            cs,
+            bb,
+            so,
+            sh,
+            sf,
+            hbp,
+            ops,
+            kRate: kRateRaw,
+            bbRate: bbRateRaw,
+            hardHit: toNum(getVal(cols, ["hardhit", "hardhitpct", "hh"])) || Math.min(60, Math.max(25, ops * 55)),
+            rosterPct,
+            trend,
+            playerType: "batter"
+          });
+        }
+      }
+
+      return { batters: parsedBatters, pitchers: parsedPitchers };
+    }
+
+    function parseJson(text) {
+      const data = JSON.parse(text);
+      if (!Array.isArray(data)) throw new Error("JSON 必須是陣列");
+
+      const parsedBatters = [];
+      const parsedPitchers = [];
+
+      data.forEach(raw => {
+        const type = String(raw.playerType || raw.type || (raw.era !== undefined ? "pitcher" : "batter")).toLowerCase();
+
+        if (type === "pitcher") {
+          const pos = raw.position || raw.pos || raw.role || "RP";
+          const qs = toNum(raw.qs);
+          const ip = toNum(raw.ip);
+          const kTotal = toNum(raw.k_total || raw.k || raw.so);
+          const bbTotal = toNum(raw.bb);
+          const k9 = toNum(raw.k9) || (ip > 0 && kTotal > 0 ? (kTotal / ip) * 9 : 0);
+          const sv = toNum(raw.sv || raw.saves);
+          const hld = toNum(raw.hld || raw.holds);
+          parsedPitchers.push({
+            name: raw.name || raw.player || "Unknown",
+            team: raw.team || "?",
+            position: pos,
+            role: raw.role || (String(pos).includes("SP") ? "SP" : (qs > 5 ? "SP" : "RP")),
+            age: toNum(raw.age),
+            g: toNum(raw.g),
+            gs: toNum(raw.gs),
+            cg: toNum(raw.cg),
+            sho: toNum(raw.sho),
+            h_allowed: toNum(raw.h_allowed || raw.h),
+            er: toNum(raw.er),
+            k_total: kTotal,
+            bb: bbTotal,
+            kbb: bbTotal > 0 ? kTotal / bbTotal : kTotal,
+            hbp: toNum(raw.hbp),
+            hr_allowed: toNum(raw.hr_allowed || raw.hr),
+            era: toNum(raw.era),
+            whip: toNum(raw.whip),
+            k9,
+            qs,
+            w: toNum(raw.w),
+            l: toNum(raw.l),
+            sv,
+            bs: toNum(raw.bs),
+            hld,
+            svh: toNum(raw.svh || raw["sv+h"]) || (sv + hld),
+            ip,
+            rosterPct: toNum(raw.rosterPct),
+            trend: String(raw.trend || "STABLE").toUpperCase(),
+            playerType: "pitcher"
+          });
+        } else {
+          const ab = toNum(raw.ab);
+          const bb = toNum(raw.bb);
+          const so = toNum(raw.so || raw.k);
+          parsedBatters.push({
+            name: raw.name || raw.player || "Unknown",
+            team: raw.team || "?",
+            position: raw.position || raw.pos || "?",
+            age: toNum(raw.age),
+            g: toNum(raw.g),
+            ab,
+            r: toNum(raw.r),
+            h: toNum(raw.h),
+            doubles: toNum(raw.doubles || raw["2b"]),
+            triples: toNum(raw.triples || raw["3b"]),
+            avg: toNum(raw.avg),
+            obp: toNum(raw.obp),
+            slg: toNum(raw.slg),
+            hr: toNum(raw.hr),
+            rbi: toNum(raw.rbi),
+            sb: toNum(raw.sb),
+            cs: toNum(raw.cs),
+            bb,
+            so,
+            sh: toNum(raw.sh),
+            sf: toNum(raw.sf),
+            hbp: toNum(raw.hbp),
+            ops: toNum(raw.ops),
+            kRate: toNum(raw.kRate) || (ab > 0 ? (so / ab) * 100 : 0),
+            bbRate: toNum(raw.bbRate) || (ab > 0 ? (bb / ab) * 100 : 0),
+            hardHit: toNum(raw.hardHit),
+            rosterPct: toNum(raw.rosterPct),
+            trend: String(raw.trend || "STABLE").toUpperCase(),
+            playerType: "batter"
+          });
+        }
+      });
+
+      return { batters: parsedBatters, pitchers: parsedPitchers };
+    }
+
+    function showStatus(type, message) {
+      const el = document.getElementById("importStatus");
+      el.className = `import-status ${type}`;
+      el.textContent = message;
+      if (type === "ok") {
+        window.setTimeout(() => {
+          el.className = "import-status";
+        }, 5000);
+      }
+    }
+
+    function applyParsedData(parsed) {
+      const hasB = parsed.batters && parsed.batters.length;
+      const hasP = parsed.pitchers && parsed.pitchers.length;
+      if (!hasB && !hasP) throw new Error("找不到可用資料列");
+
+      if (hasB) batters = parsed.batters;
+      if (hasP) pitchers = parsed.pitchers;
+
+      computeAllScores();
+      rebuildUi();
+
+      const total = batters.length + pitchers.length;
+      document.getElementById("dataSourceLabel").textContent = `自訂資料 (${total})`;
+      document.getElementById("footerNote").textContent = `已載入自訂資料，總球員 ${total}`;
+
+      showStatus("ok", `成功載入 ${total} 位球員（打者 ${batters.length}、投手 ${pitchers.length}）`);
+    }
+
+    function parseAndApply(text) {
+      const cleaned = String(text || "").trim();
+      if (!cleaned) {
+        showStatus("err", "資料內容為空");
+        return;
+      }
+
+      try {
+        const parsed = cleaned.startsWith("[") || cleaned.startsWith("{")
+          ? parseJson(cleaned)
+          : parseCsv(cleaned);
+        applyParsedData(parsed);
+      } catch (err) {
+        showStatus("err", `解析失敗：${err.message}`);
+      }
+    }
+
+    function readFileAsText(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = ev => resolve(String(ev.target.result || ""));
+        reader.onerror = () => reject(new Error("讀取檔案失敗"));
+        reader.readAsText(file);
+      });
+    }
+
+    async function parseAndApplyFiles(fileList) {
+      const files = Array.from(fileList || []);
+      if (!files.length) return;
+
+      const merged = { batters: [], pitchers: [] };
+      const failed = [];
+      let okCount = 0;
+
+      for (const file of files) {
+        try {
+          const text = await readFileAsText(file);
+          const cleaned = String(text || "").trim();
+          if (!cleaned) {
+            throw new Error("檔案內容為空");
+          }
+          const parsed = cleaned.startsWith("[") || cleaned.startsWith("{")
+            ? parseJson(cleaned)
+            : parseCsv(cleaned);
+
+          merged.batters.push(...(parsed.batters || []));
+          merged.pitchers.push(...(parsed.pitchers || []));
+          okCount += 1;
+        } catch (err) {
+          failed.push(`${file.name}：${err.message}`);
+        }
+      }
+
+      if (!merged.batters.length && !merged.pitchers.length) {
+        showStatus("err", `所有檔案皆解析失敗：${failed.join(" | ")}`);
+        return;
+      }
+
+      applyParsedData(merged);
+
+      if (failed.length) {
+        showStatus("ok", `已成功載入 ${okCount} 個檔案，略過 ${failed.length} 個檔案：${failed.join(" | ")}`);
+      }
+    }
+
+    async function autoLoadLocalExports() {
+      const candidates = [
+        "./mlb-player-stats-Batters.csv",
+        "./mlb-player-stats-Pitchers.csv",
+        "./mlb-player-stats-P.csv"
+      ];
+
+      let loadedB = null;
+      let loadedP = null;
+
+      for (const path of candidates) {
+        try {
+          const resp = await fetch(path);
+          if (!resp.ok) continue;
+          const text = await resp.text();
+          const parsed = parseCsv(text);
+
+          if (parsed.batters.length) loadedB = parsed.batters;
+          if (parsed.pitchers.length) loadedP = parsed.pitchers;
+        } catch (_) {
+          // ignore fetch failures on file:// or absent files
+        }
+      }
+
+      if (loadedB || loadedP) {
+        if (loadedB) batters = loadedB;
+        if (loadedP) pitchers = loadedP;
+        if (loadedB) databaseBatters = loadedB.map(p => ({ ...p }));
+        if (loadedP) databasePitchers = loadedP.map(p => ({ ...p }));
+        computeAllScores();
+        rebuildUi();
+
+        const total = batters.length + pitchers.length;
+        document.getElementById("dataSourceLabel").textContent = `資料庫 (${total})`;
+        document.getElementById("footerNote").textContent = `已載入本地資料庫，總球員 ${total}`;
+        showStatus("ok", `已自動載入本地檔案資料 (${total} 位球員)`);
+      } else {
+        document.getElementById("dataSourceLabel").textContent = "示意資料";
+        document.getElementById("footerNote").textContent = "未偵測到本地 CSV 資料庫，請用拖拉或啟用本地伺服器。";
+      }
+    }
+
+    function buildBatterPositionFilter() {
+      const sel = document.getElementById("b-pos");
+      const current = sel.value;
+      while (sel.options.length > 1) sel.remove(1);
+
+      const posSet = new Set();
+      batters.forEach(p => String(p.position || "").split("/").forEach(pos => posSet.add(pos)));
+      Array.from(posSet).sort().forEach(pos => {
+        if (!pos) return;
+        const o = document.createElement("option");
+        o.value = pos;
+        o.textContent = pos;
+        sel.appendChild(o);
+      });
+
+      if (Array.from(posSet).includes(current)) sel.value = current;
+      else sel.value = "ALL";
+    }
+
+    function getTableByTarget(target) {
+      return target === "b"
+        ? document.querySelector("#tab-batters table")
+        : document.querySelector("#tab-pitchers table");
+    }
+
+    function getTableHeaderMeta(target) {
+      const table = getTableByTarget(target);
+      if (!table) return [];
+      return Array.from(table.querySelectorAll("thead th")).map((th, idx) => ({
+        col: idx + 1,
+        key: th.dataset.key || "__tier",
+        label: th.textContent.trim() || `Col ${idx + 1}`
+      }));
+    }
+
+    function applyColumnPreset(target, preset) {
+      const meta = getTableHeaderMeta(target);
+      if (!meta.length) return;
+
+      if (preset === "all") {
+        meta.forEach(item => {
+          columnState[target][item.col] = true;
+        });
+      } else if (preset === "none") {
+        meta.forEach(item => {
+          columnState[target][item.col] = false;
+        });
+      } else {
+        const keySet = gameMode === "points"
+          ? columnPresets[target].h2h_points
+          : columnPresets[target].h2h_cat;
+        meta.forEach(item => {
+          columnState[target][item.col] = keySet.has(item.key);
+        });
+      }
+
+      meta.forEach(item => {
+        if (item.key === "__star") {
+          columnState[target][item.col] = true;
+        }
+      });
+
+      const container = document.getElementById(target === "b" ? "b-col-toggle" : "p-col-toggle");
+      if (container) {
+        container.querySelectorAll("input[data-col]").forEach(input => {
+          const col = Number(input.dataset.col);
+          input.checked = columnState[target][col] !== false;
+        });
+      }
+
+      applyColumnVisibility(target);
+    }
+
+    function applyColumnVisibility(target) {
+      const table = getTableByTarget(target);
+      if (!table) return;
+
+      const rows = table.querySelectorAll("tr");
+      rows.forEach(row => {
+        const cells = Array.from(row.children);
+        cells.forEach((cell, idx) => {
+          const col = idx + 1;
+          const isVisible = columnState[target][col] !== false;
+          cell.style.display = isVisible ? "" : "none";
+        });
+      });
+    }
+
+    function initColumnToggles(target) {
+      const table = getTableByTarget(target);
+      const container = document.getElementById(target === "b" ? "b-col-toggle" : "p-col-toggle");
+      if (!table || !container) return;
+
+      const headers = getTableHeaderMeta(target);
+      container.innerHTML = "";
+
+      headers.forEach(item => {
+        if (columnState[target][item.col] === undefined) {
+          columnState[target][item.col] = true;
+        }
+        if (item.key === "__star") {
+          columnState[target][item.col] = true;
+        }
+      });
+
+      if (!columnState[target].__initialized) {
+        applyColumnPreset(target, "h2h");
+        columnState[target].__initialized = true;
+      }
+
+      headers.forEach(item => {
+        if (item.key === "__star") return;
+        const label = document.createElement("label");
+        label.className = "col-toggle-item";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.dataset.col = String(item.col);
+        checkbox.checked = columnState[target][item.col] !== false;
+        checkbox.addEventListener("change", () => {
+          columnState[target][item.col] = checkbox.checked;
+          applyColumnVisibility(target);
+        });
+
+        const text = document.createElement("span");
+        text.textContent = item.label;
+
+        label.appendChild(checkbox);
+        label.appendChild(text);
+        container.appendChild(label);
+      });
+
+      applyColumnVisibility(target);
+    }
+
+    function playerWatchKey(p) {
+      return `${p.playerType}:${p.name}`;
+    }
+
+    function saveWatchlist() {
+      try {
+        const payload = JSON.stringify(Array.from(watchlist));
+        window.localStorage.setItem(WATCHLIST_STORAGE_KEY, payload);
+      } catch (_) {
+        // Ignore storage errors (private mode, disabled storage, quota exceeded).
+      }
+    }
+
+    function loadWatchlist() {
+      try {
+        const raw = window.localStorage.getItem(WATCHLIST_STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return;
+        watchlist.clear();
+        parsed.forEach(key => {
+          if (typeof key === "string" && key.includes(":")) {
+            watchlist.add(key);
+          }
+        });
+      } catch (_) {
+        // Ignore malformed or unavailable storage.
+      }
+    }
+
+    function matchBatterCategory(p, category) {
+      if (category === "POWER") return safeNum(p.hr) >= 15;
+      if (category === "SPEED") return safeNum(p.sb) >= 20;
+      if (category === "AVG") return safeNum(p.avg) >= 0.280;
+      if (category === "OBP") return safeNum(p.obp) >= 0.340;
+      if (category === "FA") return safeNum(p.rosterPct) < 80;
+      if (category === "WATCHLIST") return watchlist.has(playerWatchKey(p));
+      return true;
+    }
+
+    function matchPitcherCategory(p, category) {
+      if (category === "K") return safeNum(p.k9) >= 10;
+      if (category === "QS") return p.role === "SP" && safeNum(p.qs) >= 15;
+      if (category === "CLOSER") return safeNum(p.sv) >= 20;
+      if (category === "COMMAND") return safeNum(p.whip) <= 1.10;
+      if (category === "FA") return safeNum(p.rosterPct) < 80;
+      if (category === "WATCHLIST") return watchlist.has(playerWatchKey(p));
+      return true;
+    }
+
+    function renderBatters() {
+      bState.filtered = batters.filter(p => {
+        const txt = `${p.name} ${p.team}`.toLowerCase();
+        return txt.includes(bState.search.toLowerCase()) &&
+          (bState.position === "ALL" || String(p.position).includes(bState.position)) &&
+          matchBatterCategory(p, bState.category);
+      }).sort((a, b) => {
+        const key = bState.sortBy;
+        const dir = bState.sortDir;
+        return typeof a[key] === "string"
+          ? a[key].localeCompare(b[key]) * dir
+          : (a[key] - b[key]) * dir;
+      });
+
+      if (bState.kpiFilter === "multitool") {
+        bState.filtered = bState.filtered.filter(p => safeNum(p.hr) >= 20 && safeNum(p.sb) >= 20);
+      } else if (bState.kpiFilter === "elite") {
+        bState.filtered = bState.filtered.filter(p => p.tier === "Elite");
+      }
+
+      const bFilterBar = document.getElementById("b-filter-bar");
+      const bFilterLabel = document.getElementById("b-filter-label");
+      document.querySelectorAll("#tab-batters .mini-kpi .kpi").forEach(el => el.classList.remove("kpi-active"));
+      if (bState.kpiFilter) {
+        const labelMap = {
+          multitool: "跑打兼具球員 (HR≥20 且 SB≥20)",
+          elite: "菁英球員 (Elite)"
+        };
+        if (bFilterBar) bFilterBar.classList.add("active");
+        if (bFilterLabel) bFilterLabel.textContent = `篩選中：${labelMap[bState.kpiFilter] || "KPI"}`;
+        const activeKpi = document.getElementById(`kpi-b-${bState.kpiFilter}`);
+        if (activeKpi) activeKpi.classList.add("kpi-active");
+      } else if (bFilterBar) {
+        bFilterBar.classList.remove("active");
+      }
+
+      document.getElementById("b-count").textContent = `${bState.filtered.length} 球員`;
+      const tbody = document.getElementById("b-rows");
+      tbody.innerHTML = "";
+
+      bState.filtered.forEach(p => {
+        const watchKey = playerWatchKey(p);
+        const isStarred = watchlist.has(watchKey);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="star-col"><button class="star-btn ${isStarred ? "starred" : ""}" type="button" data-action="watch" data-player-key="${esc(watchKey)}" aria-label="${isStarred ? "移除觀察名單" : "加入觀察名單"}" title="${isStarred ? "已加星號" : "加入觀察名單"}">★</button></td>
+          <td>${esc(p.name)}</td>
+          <td>${esc(p.team)}</td>
+          <td>${esc(p.position)}</td>
+          <td>${Math.round(safeNum(p.age))}</td>
+          <td>${Math.round(safeNum(p.g))}</td>
+          <td>${Math.round(safeNum(p.ab))}</td>
+          <td>${Math.round(safeNum(p.r))}</td>
+          <td>${Math.round(safeNum(p.h))}</td>
+          <td>${Math.round(safeNum(p.doubles))}</td>
+          <td>${Math.round(safeNum(p.triples))}</td>
+          <td>${safeNum(p.avg).toFixed(3)}</td>
+          <td>${safeNum(p.obp).toFixed(3)}</td>
+          <td>${safeNum(p.slg).toFixed(3)}</td>
+          <td>${p.hr}</td>
+          <td>${p.rbi}</td>
+          <td>${p.sb}</td>
+          <td>${Math.round(safeNum(p.cs))}</td>
+          <td>${Math.round(safeNum(p.bb))}</td>
+          <td>${Math.round(safeNum(p.so))}</td>
+          <td>${Math.round(safeNum(p.sh))}</td>
+          <td>${Math.round(safeNum(p.sf))}</td>
+          <td>${Math.round(safeNum(p.hbp))}</td>
+          <td>${safeNum(p.ops).toFixed(3)}</td>
+          <td>${Math.round(safeNum(p.valueScore))}</td>
+          <td>${p.riskScore == null ? "—" : Math.round(safeNum(p.riskScore))}</td>
+          <td><span class="score-pill ${p.tierClass}">${esc(p.tier)}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const list = bState.filtered;
+      if (!list.length) {
+        document.getElementById("b-avgVal").textContent = "-";
+        document.getElementById("b-riskRate").textContent = "-";
+        document.getElementById("b-mispriced").textContent = "-";
+        return;
+      }
+
+      document.getElementById("b-avgVal").textContent = (list.reduce((s, p) => s + p.valueScore, 0) / list.length).toFixed(1);
+      document.getElementById("b-riskRate").textContent = list.filter(p => safeNum(p.hr) >= 20 && safeNum(p.sb) >= 20).length;
+      document.getElementById("b-mispriced").textContent = list.filter(p => p.tier === "Elite").length;
+      applyColumnVisibility("b");
+    }
+
+    function renderPitchers() {
+      pState.filtered = pitchers.filter(p => {
+        const txt = `${p.name} ${p.team}`.toLowerCase();
+        return txt.includes(pState.search.toLowerCase()) &&
+          (pState.role === "ALL" || p.role === pState.role) &&
+          matchPitcherCategory(p, pState.category);
+      }).sort((a, b) => {
+        const key = pState.sortBy;
+        const dir = pState.sortDir;
+        return typeof a[key] === "string"
+          ? a[key].localeCompare(b[key]) * dir
+          : (a[key] - b[key]) * dir;
+      });
+
+      if (pState.kpiFilter === "closer") {
+        pState.filtered = pState.filtered.filter(p => safeNum(p.svh) >= 25);
+      } else if (pState.kpiFilter === "ace") {
+        pState.filtered = pState.filtered.filter(p => p.role === "SP" && safeNum(p.qs) >= 20 && safeNum(p.whip) <= 1.10);
+      }
+
+      const pFilterBar = document.getElementById("p-filter-bar");
+      const pFilterLabel = document.getElementById("p-filter-label");
+      document.querySelectorAll("#tab-pitchers .mini-kpi .kpi").forEach(el => el.classList.remove("kpi-active"));
+      if (pState.kpiFilter) {
+        const labelMap = {
+          closer: "優質後援投手 (NSVH≥25)",
+          ace: "宰制級先發投手 (QS≥20 且 WHIP≤1.10)"
+        };
+        if (pFilterBar) pFilterBar.classList.add("active");
+        if (pFilterLabel) pFilterLabel.textContent = `篩選中：${labelMap[pState.kpiFilter] || "KPI"}`;
+        const activeKpi = document.getElementById(`kpi-p-${pState.kpiFilter}`);
+        if (activeKpi) activeKpi.classList.add("kpi-active");
+      } else if (pFilterBar) {
+        pFilterBar.classList.remove("active");
+      }
+
+      document.getElementById("p-count").textContent = `${pState.filtered.length} 球員`;
+      const tbody = document.getElementById("p-rows");
+      tbody.innerHTML = "";
+
+      pState.filtered.forEach(p => {
+        const watchKey = playerWatchKey(p);
+        const isStarred = watchlist.has(watchKey);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="star-col"><button class="star-btn ${isStarred ? "starred" : ""}" type="button" data-action="watch" data-player-key="${esc(watchKey)}" aria-label="${isStarred ? "移除觀察名單" : "加入觀察名單"}" title="${isStarred ? "已加星號" : "加入觀察名單"}">★</button></td>
+          <td>${esc(p.name)}</td>
+          <td>${esc(p.team)}</td>
+          <td>${esc(p.role)}</td>
+          <td>${Math.round(safeNum(p.age))}</td>
+          <td>${Math.round(safeNum(p.g))}</td>
+          <td>${Math.round(safeNum(p.gs))}</td>
+          <td>${Math.round(safeNum(p.cg))}</td>
+          <td>${Math.round(safeNum(p.sho))}</td>
+          <td>${safeNum(p.ip).toFixed(1)}</td>
+          <td>${Math.round(safeNum(p.h_allowed))}</td>
+          <td>${Math.round(safeNum(p.er))}</td>
+          <td>${Math.round(safeNum(p.k_total))}</td>
+          <td>${Math.round(safeNum(p.bb))}</td>
+          <td>${Math.round(safeNum(p.hr_allowed))}</td>
+          <td>${safeNum(p.era).toFixed(2)}</td>
+          <td>${safeNum(p.whip).toFixed(2)}</td>
+          <td>${safeNum(p.k9).toFixed(1)}</td>
+          <td>${safeNum(p.kbb).toFixed(2)}</td>
+          <td>${Math.round(safeNum(p.qs))}</td>
+          <td>${Math.round(safeNum(p.w))}</td>
+          <td>${Math.round(safeNum(p.l))}</td>
+          <td>${Math.round(safeNum(p.sv))}</td>
+          <td>${Math.round(safeNum(p.bs))}</td>
+          <td>${Math.round(safeNum(p.hld))}</td>
+          <td>${Math.round(safeNum(p.svh))}</td>
+          <td>${Math.round(safeNum(p.valueScore))}</td>
+          <td>${p.riskScore == null ? "—" : Math.round(safeNum(p.riskScore))}</td>
+          <td><span class="score-pill ${p.tierClass}">${esc(p.tier)}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const sp = pitchers.filter(p => p.role === "SP");
+      document.getElementById("p-avgVal").textContent = pitchers.length ? (pitchers.reduce((s, p) => s + p.valueScore, 0) / pitchers.length).toFixed(1) : "-";
+      document.getElementById("p-closerCount").textContent = pitchers.filter(p => p.svh >= 25).length;
+      document.getElementById("p-avgQS").textContent = pitchers.filter(p => p.role === "SP" && safeNum(p.qs) >= 20 && safeNum(p.whip) <= 1.10).length;
+      applyColumnVisibility("p");
+    }
+
+    function makePlayerCard(p) {
+      const isB = p.playerType === "batter";
+      const riskDisplay = p.riskScore == null ? "—" : Math.round(safeNum(p.riskScore));
+      const rows = isB
+        ? [["Value", Math.round(safeNum(p.valueScore))], ["Risk", riskDisplay], ["R", Math.round(safeNum(p.r))], ["HR", Math.round(safeNum(p.hr))], ["RBI", Math.round(safeNum(p.rbi))], ["SB", Math.round(safeNum(p.sb))], ["AVG", safeNum(p.avg).toFixed(3)], ["H", Math.round(safeNum(p.h))], ["OPS", safeNum(p.ops).toFixed(3)]]
+        : [["Value", Math.round(safeNum(p.valueScore))], ["Risk", riskDisplay], ["W", Math.round(safeNum(p.w))], ["QS", Math.round(safeNum(p.qs))], ["NSVH", Math.round(safeNum(p.svh))], ["K", Math.round(safeNum(p.k_total))], ["ERA", safeNum(p.era).toFixed(2)], ["WHIP", safeNum(p.whip).toFixed(2)], ["K/BB", safeNum(p.kbb).toFixed(2)]];
+
+      return `
+        <h3 class="player-title">${esc(p.name)}</h3>
+        <div class="meta">${esc(p.team)} | ${esc(p.position || p.role)} | Roster ${p.rosterPct}% | ${esc(p.trend)}</div>
+        <div class="metrics">
+          ${rows.map(([label, value]) => `<div class="metric"><span class="m-label">${label}</span><span class="m-val">${value}</span></div>`).join("")}
+        </div>
+      `;
+    }
+
+    function buildCompareSeries(player, pool) {
+      const mn = key => minOf(pool, key);
+      const mx = key => maxOf(pool, key);
+      const isB = player.playerType === "batter";
+
+      if (gameMode === "points") {
+        if (isB) {
+          const singles = Math.max(0, safeNum(player.h) - safeNum(player.doubles) - safeNum(player.triples) - safeNum(player.hr));
+          const poolSingles = pool.map(x => Math.max(0, safeNum(x.h) - safeNum(x.doubles) - safeNum(x.triples) - safeNum(x.hr)));
+          return [
+            { label: "R", val: safeNum(player.r), n: norm(player.r, mn("r"), mx("r")) },
+            { label: "1B", val: singles, n: norm(singles, Math.min(...poolSingles), Math.max(...poolSingles)) },
+            { label: "2B", val: safeNum(player.doubles), n: norm(player.doubles, mn("doubles"), mx("doubles")) },
+            { label: "3B", val: safeNum(player.triples), n: norm(player.triples, mn("triples"), mx("triples")) },
+            { label: "HR", val: safeNum(player.hr), n: norm(player.hr, mn("hr"), mx("hr")) },
+            { label: "RBI", val: safeNum(player.rbi), n: norm(player.rbi, mn("rbi"), mx("rbi")) },
+            { label: "SB", val: safeNum(player.sb), n: norm(player.sb, mn("sb"), mx("sb")) },
+            { label: "BB", val: safeNum(player.bb), n: norm(player.bb, mn("bb"), mx("bb")) },
+            { label: "HBP", val: safeNum(player.hbp), n: norm(player.hbp, mn("hbp"), mx("hbp")) }
+          ];
+        }
+
+        return [
+          { label: "W", val: safeNum(player.w), n: norm(player.w, mn("w"), mx("w")) },
+          { label: "SV", val: safeNum(player.sv), n: norm(player.sv, mn("sv"), mx("sv")) },
+          { label: "OUT", val: safeNum(player.ip) * 3, n: norm(safeNum(player.ip), mn("ip"), mx("ip")) },
+          { label: "H", val: safeNum(player.h_allowed), n: 100 - norm(player.h_allowed, mn("h_allowed"), mx("h_allowed")) },
+          { label: "ER", val: safeNum(player.er), n: 100 - norm(player.er, mn("er"), mx("er")) },
+          { label: "BB", val: safeNum(player.bb), n: 100 - norm(player.bb, mn("bb"), mx("bb")) },
+          { label: "HBP", val: safeNum(player.hbp), n: 100 - norm(player.hbp, mn("hbp"), mx("hbp")) },
+          { label: "K", val: safeNum(player.k_total), n: norm(player.k_total, mn("k_total"), mx("k_total")) }
+        ];
+      }
+
+      if (isB) {
+        return [
+          { label: "R", val: safeNum(player.r), n: norm(player.r, mn("r"), mx("r")) },
+          { label: "H", val: safeNum(player.h), n: norm(player.h, mn("h"), mx("h")) },
+          { label: "HR", val: safeNum(player.hr), n: norm(player.hr, mn("hr"), mx("hr")) },
+          { label: "RBI", val: safeNum(player.rbi), n: norm(player.rbi, mn("rbi"), mx("rbi")) },
+          { label: "SB", val: safeNum(player.sb), n: norm(player.sb, mn("sb"), mx("sb")) },
+          { label: "AVG", val: safeNum(player.avg), n: norm(player.avg, mn("avg"), mx("avg")) },
+          { label: "OPS", val: safeNum(player.ops), n: norm(player.ops, mn("ops"), mx("ops")) }
+        ];
+      }
+
+      return [
+        { label: "W", val: safeNum(player.w), n: norm(player.w, mn("w"), mx("w")) },
+        { label: "QS", val: safeNum(player.qs), n: norm(player.qs, mn("qs"), mx("qs")) },
+        { label: "NSVH", val: safeNum(player.svh), n: norm(player.svh, mn("svh"), mx("svh")) },
+        { label: "K", val: safeNum(player.k_total), n: norm(player.k_total, mn("k_total"), mx("k_total")) },
+        { label: "ERA", val: safeNum(player.era), n: 100 - norm(player.era, mn("era"), mx("era")) },
+        { label: "WHIP", val: safeNum(player.whip), n: 100 - norm(player.whip, mn("whip"), mx("whip")) },
+        { label: "K/BB", val: safeNum(player.kbb), n: norm(player.kbb, mn("kbb"), mx("kbb")) }
+      ];
+    }
+
+    function drawCompareBarsBlock(ctx, area, title, seriesA, seriesB, nameA, nameB) {
+      const leftPad = area.x + 78;
+      const rightEdge = area.x + area.w - 8;
+      const barMax = Math.max(10, rightEdge - leftPad - 40);
+      const rowGap = 32;
+      const barH = 7;
+
+      ctx.fillStyle = "#1a2235";
+      ctx.font = "800 12px Manrope";
+      ctx.textAlign = "left";
+      ctx.fillText(title, area.x + 2, area.y + 3);
+
+      ctx.fillStyle = "rgba(239,79,35,0.9)";
+      ctx.fillRect(area.x + 2, area.y + 12, 16, 8);
+      ctx.fillStyle = "#1a2235";
+      ctx.font = "700 11px Manrope";
+      ctx.fillText(nameA, area.x + 24, area.y + 20);
+
+      ctx.fillStyle = "rgba(15,108,255,0.9)";
+      ctx.fillRect(area.x + 2, area.y + 26, 16, 8);
+      ctx.fillStyle = "#1a2235";
+      ctx.fillText(nameB, area.x + 24, area.y + 34);
+
+      const rows = Math.min(seriesA.length, seriesB.length);
+      for (let i = 0; i < rows; i += 1) {
+        const y = area.y + 54 + i * rowGap;
+        const a = seriesA[i];
+        const b = seriesB[i];
+
+        ctx.fillStyle = "#45506a";
+        ctx.font = "700 11px Manrope";
+        ctx.textAlign = "right";
+        ctx.fillText(a.label, leftPad - 10, y + 2);
+
+        ctx.fillStyle = "rgba(239,79,35,0.2)";
+        ctx.fillRect(leftPad, y - 7, barMax, barH);
+        ctx.fillStyle = "rgba(239,79,35,0.9)";
+        ctx.fillRect(leftPad, y - 7, barMax * (a.n / 100), barH);
+
+        ctx.fillStyle = "rgba(15,108,255,0.2)";
+        ctx.fillRect(leftPad, y + 6, barMax, barH);
+        ctx.fillStyle = "rgba(15,108,255,0.9)";
+        ctx.fillRect(leftPad, y + 6, barMax * (b.n / 100), barH);
+
+        ctx.fillStyle = "#24304b";
+        ctx.textAlign = "left";
+        ctx.fillText(String(Number.isInteger(a.val) ? a.val : a.val.toFixed(3)), leftPad + barMax + 6, y - 1);
+        ctx.fillText(String(Number.isInteger(b.val) ? b.val : b.val.toFixed(3)), leftPad + barMax + 6, y + 12);
+      }
+    }
+
+    function drawSingleBarsBlock(ctx, area, title, series, color, name) {
+      const leftPad = area.x + 62;
+      const rightEdge = area.x + area.w - 8;
+      const barMax = Math.max(10, rightEdge - leftPad - 40);
+      const rowGap = 26;
+      const barH = 10;
+
+      ctx.fillStyle = "#1a2235";
+      ctx.font = "800 12px Manrope";
+      ctx.textAlign = "left";
+      ctx.fillText(title, area.x + 2, area.y + 3);
+
+      ctx.fillStyle = color;
+      ctx.fillRect(area.x + 2, area.y + 12, 16, 8);
+      ctx.fillStyle = "#1a2235";
+      ctx.font = "700 11px Manrope";
+      ctx.fillText(name, area.x + 24, area.y + 20);
+
+      for (let i = 0; i < series.length; i += 1) {
+        const y = area.y + 48 + i * rowGap;
+        const row = series[i];
+
+        ctx.fillStyle = "#45506a";
+        ctx.font = "700 11px Manrope";
+        ctx.textAlign = "right";
+        ctx.fillText(row.label, leftPad - 10, y + 2);
+
+        ctx.fillStyle = "rgba(17,19,24,0.12)";
+        ctx.fillRect(leftPad, y - 6, barMax, barH);
+        ctx.fillStyle = color;
+        ctx.fillRect(leftPad, y - 6, barMax * (row.n / 100), barH);
+
+        ctx.fillStyle = "#24304b";
+        ctx.textAlign = "left";
+        ctx.fillText(String(Number.isInteger(row.val) ? row.val : row.val.toFixed(3)), leftPad + barMax + 6, y + 2);
+      }
+    }
+
+    function drawCrossTypeBars(ctx, width, height, pA, pB) {
+      ctx.clearRect(0, 0, width, height);
+      const half = (width - 24) / 2;
+      const poolA = pA.playerType === "batter" ? batters : pitchers;
+      const poolB = pB.playerType === "batter" ? batters : pitchers;
+
+      drawSingleBarsBlock(
+        ctx,
+        { x: 10, y: 16, w: half, h: height - 24 },
+        `${pA.playerType === "batter" ? "打者" : "投手"}指標`,
+        buildCompareSeries(pA, poolA),
+        "rgba(239,79,35,0.92)",
+        pA.name
+      );
+
+      ctx.strokeStyle = "rgba(17,19,24,0.14)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(half + 12, 12);
+      ctx.lineTo(half + 12, height - 12);
+      ctx.stroke();
+
+      drawSingleBarsBlock(
+        ctx,
+        { x: half + 20, y: 16, w: half - 10, h: height - 24 },
+        `${pB.playerType === "batter" ? "打者" : "投手"}指標`,
+        buildCompareSeries(pB, poolB),
+        "rgba(15,108,255,0.92)",
+        pB.name
+      );
+    }
+
+    function drawRadar(pA, pB) {
+      const canvas = document.getElementById("radarCanvas");
+      const ctx = canvas.getContext("2d");
+      const width = canvas.width;
+      const height = canvas.height;
+      if (!ctx) return;
+
+      if (pA.playerType !== pB.playerType) {
+        drawCrossTypeBars(ctx, width, height, pA, pB);
+        return;
+      }
+
+      const pool = pA.playerType === "batter" ? batters : pitchers;
+      const sA = buildCompareSeries(pA, pool);
+      const sB = buildCompareSeries(pB, pool);
+      ctx.clearRect(0, 0, width, height);
+      drawCompareBarsBlock(
+        ctx,
+        { x: 14, y: 14, w: width - 28, h: height - 28 },
+        gameMode === "points" ? "H2H Points 指標對比" : "H2H Categories 指標對比",
+        sA,
+        sB,
+        pA.name,
+        pB.name
+      );
+      return;
+    }
+
+    function populateCompareSelectors() {
+      const typeA = document.getElementById("cmp-typeA").value;
+      const typeB = document.getElementById("cmp-typeB").value;
+      const listA = typeA === "batter" ? batters : pitchers;
+      const listB = typeB === "batter" ? batters : pitchers;
+      const selA = document.getElementById("cmp-A");
+      const selB = document.getElementById("cmp-B");
+      const searchA = document.getElementById("cmp-A-search");
+      const searchB = document.getElementById("cmp-B-search");
+
+      const prevA = selA.value;
+      const prevB = selB.value;
+
+      _cmpAllA = listA.map(p => ({
+        value: p.name,
+        label: `${p.name} (${p.team})`,
+        search: `${p.name} ${p.team} ${p.position || p.role || ""}`.toLowerCase()
+      }));
+      _cmpAllB = listB.map(p => ({
+        value: p.name,
+        label: `${p.name} (${p.team})`,
+        search: `${p.name} ${p.team} ${p.position || p.role || ""}`.toLowerCase()
+      }));
+
+      filterSelectOptions(selA, searchA ? searchA.value : "", _cmpAllA, prevA);
+      filterSelectOptions(selB, searchB ? searchB.value : "", _cmpAllB, prevB);
+    }
+
+    function renderCompare() {
+      const typeA = document.getElementById("cmp-typeA").value;
+      const typeB = document.getElementById("cmp-typeB").value;
+      const poolA = typeA === "batter" ? batters : pitchers;
+      const poolB = typeB === "batter" ? batters : pitchers;
+      if (!poolA.length || !poolB.length) return;
+
+      const pA = poolA.find(p => p.name === document.getElementById("cmp-A").value) || poolA[0];
+      const pB = poolB.find(p => p.name === document.getElementById("cmp-B").value) || poolB[0];
+
+      document.getElementById("cmp-cardA").innerHTML = makePlayerCard(pA);
+      document.getElementById("cmp-cardB").innerHTML = makePlayerCard(pB);
+      drawRadar(pA, pB);
+
+      const valueGap = pA.valueScore - pB.valueScore;
+      const stronger = valueGap >= 0 ? pA.name : pB.name;
+      const hasRisk = pA.riskScore != null && pB.riskScore != null;
+      const riskGap = hasRisk ? (safeNum(pA.riskScore) - safeNum(pB.riskScore)) : 0;
+      const safer = riskGap <= 0 ? pA.name : pB.name;
+      const crossType = pA.playerType !== pB.playerType;
+
+      const notes = [];
+
+      if (hasRisk) {
+        notes.push(`${stronger} 的綜合價值較高（差距 ${Math.abs(valueGap)}），而 ${safer} 在風險控制上更有優勢。`);
+      } else {
+        notes.push(`${stronger} 的綜合價值較高（差距 ${Math.abs(valueGap)}）。`);
+      }
+
+      if (crossType) {
+        const batPlayer = pA.playerType === "batter" ? pA : pB;
+        const pitPlayer = pA.playerType === "pitcher" ? pA : pB;
+        notes.push(
+          `跨類型對比重點不在同尺比較，而是補強方向：${batPlayer.name} 偏向補 R/HR/RBI/SB，${pitPlayer.name} 偏向補 K/ERA/WHIP/NSVH。` +
+          ` 建議以你本週最缺的 1-2 個類別當優先決策。`
+        );
+      } else if (pA.playerType === "batter") {
+        const cats = [
+          { label: "HR", a: safeNum(pA.hr), b: safeNum(pB.hr), highWins: true },
+          { label: "RBI", a: safeNum(pA.rbi), b: safeNum(pB.rbi), highWins: true },
+          { label: "R", a: safeNum(pA.r), b: safeNum(pB.r), highWins: true },
+          { label: "SB", a: safeNum(pA.sb), b: safeNum(pB.sb), highWins: true },
+          { label: "AVG", a: safeNum(pA.avg), b: safeNum(pB.avg), highWins: true },
+          { label: "OBP", a: safeNum(pA.obp), b: safeNum(pB.obp), highWins: true },
+          { label: "OPS", a: safeNum(pA.ops), b: safeNum(pB.ops), highWins: true }
+        ];
+        let aWins = 0;
+        let bWins = 0;
+        const aEdges = [];
+        const bEdges = [];
+        cats.forEach(c => {
+          const diff = c.a - c.b;
+          if (Math.abs(diff) < 1e-9) return;
+          const aLead = c.highWins ? diff > 0 : diff < 0;
+          const fmt = c.label === "AVG" || c.label === "OBP" || c.label === "OPS"
+            ? Math.abs(diff).toFixed(3)
+            : String(Math.round(Math.abs(diff)));
+          if (aLead) {
+            aWins += 1;
+            aEdges.push({ label: c.label, diff: Math.abs(diff), fmt });
+          } else {
+            bWins += 1;
+            bEdges.push({ label: c.label, diff: Math.abs(diff), fmt });
+          }
+        });
+        const total = aWins + bWins;
+        const dominant = aWins > bWins ? pA : (bWins > aWins ? pB : null);
+        const topEdges = (dominant === pA ? aEdges : bEdges).sort((x, y) => y.diff - x.diff).slice(0, 2);
+        if (dominant) {
+          const winCount = dominant === pA ? aWins : bWins;
+          notes.push(`打者 overall 來看，${dominant.name} 在 ${total} 項核心指標中拿下 ${winCount} 項，整體覆蓋面更完整。`);
+          if (topEdges.length) {
+            notes.push(`關鍵差距主要在 ${topEdges.map(x => `${x.label}(+${x.fmt})`).join("、")}。`);
+          }
+        } else {
+          notes.push(`打者 overall 接近五五波，兩人勝負分布接近，請依你本週最缺類別來挑選。`);
+        }
+
+        const sbGap = Math.abs(safeNum(pA.sb) - safeNum(pB.sb));
+        if (sbGap >= 10) {
+          const sbLeader = safeNum(pA.sb) >= safeNum(pB.sb) ? pA.name : pB.name;
+          notes.push(`速度面上 ${sbLeader} 有明顯稀缺優勢（SB 差距 ${sbGap}），對 Categories 單週勝場影響很大。`);
+        }
+        if (gameMode === "points") {
+          notes.push("Points 模式請優先看長打與上壘事件的總和輸出，通常比單一率值更能拉開週得分。" );
+        }
+      } else {
+        const roleA = pA.role || "RP";
+        const roleB = pB.role || "RP";
+        const cats = roleA === "SP" && roleB === "SP"
+          ? [
+              { label: "K", a: safeNum(pA.k_total), b: safeNum(pB.k_total), highWins: true },
+              { label: "QS", a: safeNum(pA.qs), b: safeNum(pB.qs), highWins: true },
+              { label: "W", a: safeNum(pA.w), b: safeNum(pB.w), highWins: true },
+              { label: "ERA", a: safeNum(pA.era), b: safeNum(pB.era), highWins: false },
+              { label: "WHIP", a: safeNum(pA.whip), b: safeNum(pB.whip), highWins: false },
+              { label: "K/BB", a: safeNum(pA.kbb), b: safeNum(pB.kbb), highWins: true }
+            ]
+          : [
+              { label: "NSVH", a: safeNum(pA.svh), b: safeNum(pB.svh), highWins: true },
+              { label: "K", a: safeNum(pA.k_total), b: safeNum(pB.k_total), highWins: true },
+              { label: "ERA", a: safeNum(pA.era), b: safeNum(pB.era), highWins: false },
+              { label: "WHIP", a: safeNum(pA.whip), b: safeNum(pB.whip), highWins: false }
+            ];
+
+        let aWins = 0;
+        let bWins = 0;
+        cats.forEach(c => {
+          const diff = c.a - c.b;
+          if (Math.abs(diff) < 1e-9) return;
+          const aLead = c.highWins ? diff > 0 : diff < 0;
+          if (aLead) aWins += 1;
+          else bWins += 1;
+        });
+        const total = aWins + bWins;
+        const dominant = aWins > bWins ? pA : (bWins > aWins ? pB : null);
+        if (dominant) {
+          const winCount = dominant === pA ? aWins : bWins;
+          notes.push(`投手 overall 來看，${dominant.name} 在 ${total} 項核心指標中拿下 ${winCount} 項，整體穩定度較高。`);
+        } else {
+          notes.push("投手 overall 接近均勢，建議依你本週是要衝 K/QS 還是保 ERA/WHIP 來決策。");
+        }
+
+        if (roleA === "RP" && roleB === "RP") {
+          const nsvhGap = Math.abs(safeNum(pA.svh) - safeNum(pB.svh));
+          if (nsvhGap >= 10) {
+            const closerLeader = safeNum(pA.svh) >= safeNum(pB.svh) ? pA.name : pB.name;
+            notes.push(`後援角色中 ${closerLeader} 的 NSVH 明顯領先（差距 ${nsvhGap}），能更直接補強救援類別。`);
+          }
+        }
+      }
+
+      document.getElementById("cmp-insight").textContent = notes.join(" ");
+    }
+
+    function allPlayers() {
+      return [...batters, ...pitchers];
+    }
+
+    function populateTradeSelectors() {
+      _tradeAllOptions = allPlayers().map(p => ({
+        value: p.name,
+        label: `${p.name} (${p.team} ${p.playerType === "batter" ? "打" : "投"})`,
+        search: `${p.name} ${p.team} ${p.playerType} ${p.position || p.role || ""}`.toLowerCase()
+      }));
+
+      const giveSearch = document.getElementById("t-give-search");
+      const receiveSearch = document.getElementById("t-receive-search");
+      filterTradeSelect("t-giveSelect", giveSearch ? giveSearch.value : "");
+      filterTradeSelect("t-receiveSelect", receiveSearch ? receiveSearch.value : "");
+    }
+
+    function renderTradeList(side) {
+      const box = document.getElementById(side === "give" ? "t-giveList" : "t-receiveList");
+      const cls = side === "give" ? "give" : "receive";
+      const arr = tradeState[side];
+
+      if (!arr.length) {
+        box.innerHTML = "<span style='color:#9ba2b4; margin:auto;'>尚未選擇</span>";
+        return;
+      }
+
+      box.innerHTML = arr.map(p => `
+        <span class="trade-pill ${cls}" data-side="${side}" data-name="${esc(p.name)}">
+          ${esc(p.name)} <span style="opacity:0.6;">x</span>
+        </span>
+      `).join("");
+    }
+
+    function addTrade(side, name) {
+      if (!name) return;
+      if (tradeState[side].some(p => p.name === name)) return;
+      const p = allPlayers().find(x => x.name === name);
+      if (!p) return;
+
+      tradeState[side].push(p);
+      renderTradeList("give");
+      renderTradeList("receive");
+      calcTrade();
+    }
+
+    function removeTrade(side, name) {
+      tradeState[side] = tradeState[side].filter(p => p.name !== name);
+      renderTradeList("give");
+      renderTradeList("receive");
+      calcTrade();
+    }
+
+    function calcTrade() {
+      const give = tradeState.give;
+      const receive = tradeState.receive;
+      const box = document.getElementById("tradeResult");
+
+      if (!give.length || !receive.length) {
+        box.style.display = "none";
+        return;
+      }
+
+      box.style.display = "block";
+
+      const sumVal = arr => arr.reduce((s, p) => s + p.valueScore, 0);
+      const avgRisk = arr => {
+        const vals = arr.filter(p => p.riskScore != null).map(p => safeNum(p.riskScore));
+        if (!vals.length) return null;
+        return vals.reduce((s, v) => s + v, 0) / vals.length;
+      };
+
+      const gv = sumVal(give);
+      const rv = sumVal(receive);
+      const gr = avgRisk(give);
+      const rr = avgRisk(receive);
+      const net = rv - gv;
+      const hasRisk = gr != null && rr != null;
+      const riskDelta = hasRisk ? (rr - gr) : 0;
+
+      document.getElementById("t-giveScore").textContent = gv;
+      document.getElementById("t-receiveScore").textContent = rv;
+      document.getElementById("t-giveRisk").textContent = gr == null ? "—" : gr.toFixed(1);
+      document.getElementById("t-receiveRisk").textContent = rr == null ? "—" : rr.toFixed(1);
+
+      const total = gv + rv;
+      const gp = total ? (gv / total) * 100 : 50;
+      const rp = 100 - gp;
+      document.getElementById("t-bar-give").style.width = `${gp}%`;
+      document.getElementById("t-bar-receive").style.width = `${rp}%`;
+
+      let verdict;
+      let cls;
+      if (net >= 8) {
+        verdict = `建議接受：你得到的總價值高出 ${net} 分。`;
+        cls = "win";
+      } else if (net <= -8) {
+        verdict = `不建議：你給出的總價值高出 ${Math.abs(net)} 分。`;
+        cls = "loss";
+      } else {
+        verdict = `接近等值：雙方差距 ${Math.abs(net)} 分，請依隊伍需求決定。`;
+        cls = "even";
+      }
+
+      if (hasRisk && Math.abs(riskDelta) > 10) {
+        verdict += riskDelta > 0 ? ` 但新組合風險增加 ${riskDelta.toFixed(1)}。` : ` 且新組合風險下降 ${Math.abs(riskDelta).toFixed(1)}。`;
+      }
+
+      const sumStat = (arr, key) => arr.reduce((s, p) => s + safeNum(p[key]), 0);
+      const weightedRate = (arr, rateKey, weightKey) => {
+        const totalW = arr.reduce((s, p) => s + safeNum(p[weightKey]), 0);
+        if (!totalW) return null;
+        const total = arr.reduce((s, p) => s + safeNum(p[rateKey]) * safeNum(p[weightKey]), 0);
+        return total / totalW;
+      };
+
+      const giveBat = give.filter(p => p.playerType === "batter");
+      const receiveBat = receive.filter(p => p.playerType === "batter");
+      const givePit = give.filter(p => p.playerType === "pitcher");
+      const receivePit = receive.filter(p => p.playerType === "pitcher");
+
+      const giveBatHR = sumStat(giveBat, "hr");
+      const receiveBatHR = sumStat(receiveBat, "hr");
+      const giveBatSB = sumStat(giveBat, "sb");
+      const receiveBatSB = sumStat(receiveBat, "sb");
+      const giveBatAVG = weightedRate(giveBat, "avg", "ab");
+      const receiveBatAVG = weightedRate(receiveBat, "avg", "ab");
+
+      const givePitK = sumStat(givePit, "k_total");
+      const receivePitK = sumStat(receivePit, "k_total");
+      const givePitNSVH = sumStat(givePit, "svh");
+      const receivePitNSVH = sumStat(receivePit, "svh");
+      const givePitERA = weightedRate(givePit, "era", "ip");
+      const receivePitERA = weightedRate(receivePit, "era", "ip");
+
+      const batSummary =
+        (giveBat.length || receiveBat.length)
+          ? `打者面向：HR ${giveBatHR}→${receiveBatHR}、SB ${giveBatSB}→${receiveBatSB}${giveBatAVG != null && receiveBatAVG != null ? `、AVG ${giveBatAVG.toFixed(3)}→${receiveBatAVG.toFixed(3)}` : ""}。`
+          : "";
+      const pitSummary =
+        (givePit.length || receivePit.length)
+          ? `投手面向：K ${givePitK}→${receivePitK}、NSVH ${givePitNSVH}→${receivePitNSVH}${givePitERA != null && receivePitERA != null ? `、ERA ${givePitERA.toFixed(2)}→${receivePitERA.toFixed(2)}` : ""}。`
+          : "";
+
+      if (batSummary || pitSummary) {
+        verdict += ` Fantasy 分析師視角：${batSummary}${pitSummary}`;
+      }
+
+      if (Math.abs(net) >= 20) {
+        verdict += net > 0 ? " 這屬於明顯正 EV 交易，通常不建議再等待。" : " 這屬於明顯負 EV 交易，除非你在補特定缺口，否則應直接回絕。";
+      } else if (Math.abs(net) < 8) {
+        verdict += " 估值接近等值，建議依你本週最缺的 1 至 2 個類別決策，而不是只看總分。";
+      }
+
+      const giveCloserCore = give.filter(p => p.playerType === "pitcher" && p.role === "RP" && safeNum(p.svh) >= 15).length;
+      const receiveCloserCore = receive.filter(p => p.playerType === "pitcher" && p.role === "RP" && safeNum(p.svh) >= 15).length;
+      if (receiveCloserCore > giveCloserCore) {
+        verdict += " 你拿回更多高槓桿後援份額，對 NSVH 類別有結構性補強。";
+      } else if (receiveCloserCore < giveCloserCore) {
+        verdict += " 你失去較多高槓桿後援份額，NSVH 類別可能由優勢轉成弱項。";
+      }
+
+      if (hasRisk) {
+        verdict += riskDelta > 0
+          ? " 風險墊高代表週對戰下限可能被拉低，請搭配輪值穩定度一起評估。"
+          : " 風險下降可改善週對戰下限，對長期穩定拿分有幫助。";
+      }
+
+      const vEl = document.getElementById("t-verdict");
+      vEl.className = `verdict-box ${cls}`;
+      vEl.textContent = verdict;
+
+      const badgeClass = cls === "win" ? "s-elite" : (cls === "loss" ? "s-risk" : "s-watch");
+      document.getElementById("t-verdict-badge").innerHTML = `<span class="score-pill ${badgeClass}">${net >= 0 ? "+" : ""}${net} pts</span>`;
+    }
+
+    function bindSortHeaders(target, stateObj, renderer) {
+      document.querySelectorAll(`th[data-target='${target}']`).forEach(th => {
+        th.addEventListener("click", () => {
+          const key = th.dataset.key;
+          if (key === "__star") return;
+          if (stateObj.sortBy === key) stateObj.sortDir *= -1;
+          else {
+            stateObj.sortBy = key;
+            stateObj.sortDir = -1;
+          }
+
+          const sel = document.getElementById(target === "b" ? "b-sort" : "p-sort");
+          if (sel && sel.querySelector(`option[value='${key}']`)) sel.value = key;
+          renderer();
+        });
+      });
+    }
+
+    function rebuildUi() {
+      computeAllScores();
+      buildBatterPositionFilter();
+      initColumnToggles("b");
+      initColumnToggles("p");
+      renderBatters();
+      renderPitchers();
+      populateCompareSelectors();
+      renderCompare();
+      populateTradeSelectors();
+      renderTradeList("give");
+      renderTradeList("receive");
+      calcTrade();
+    }
+
+    function bindEvents() {
+      const tooltip = document.getElementById("col-tip");
+      const placeTooltip = e => {
+        if (!tooltip) return;
+        const margin = 10;
+        let left = e.clientX + 12;
+        let top = e.clientY + 12;
+        const w = tooltip.offsetWidth || 220;
+        const h = tooltip.offsetHeight || 50;
+
+        if (left + w + margin > window.innerWidth) {
+          left = window.innerWidth - w - margin;
+        }
+        if (top + h + margin > window.innerHeight) {
+          top = e.clientY - h - 12;
+        }
+        tooltip.style.left = `${Math.max(margin, left)}px`;
+        tooltip.style.top = `${Math.max(margin, top)}px`;
+      };
+
+      document.querySelectorAll(".mode-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const mode = btn.dataset.mode;
+          if (!mode || mode === gameMode) return;
+          gameMode = mode;
+
+          document.querySelectorAll(".mode-btn").forEach(x => x.classList.remove("active"));
+          btn.classList.add("active");
+
+          bState.kpiFilter = null;
+          pState.kpiFilter = null;
+          columnState.b.__initialized = false;
+          columnState.p.__initialized = false;
+          syncModeControls();
+          rebuildUi();
+        });
+      });
+
+      document.querySelectorAll("th[data-key]").forEach(th => {
+        th.addEventListener("mouseenter", e => {
+          const key = th.dataset.key;
+          const text = STAT_TIPS[key];
+          if (!text || !tooltip) return;
+          tooltip.textContent = text;
+          tooltip.style.display = "block";
+          placeTooltip(e);
+        });
+
+        th.addEventListener("mousemove", e => {
+          if (!tooltip || tooltip.style.display !== "block") return;
+          placeTooltip(e);
+        });
+
+        th.addEventListener("mouseleave", () => {
+          if (!tooltip) return;
+          tooltip.style.display = "none";
+        });
+      });
+
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+          document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+          btn.classList.add("active");
+          document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
+          if (btn.dataset.tab === "compare") {
+            window.setTimeout(renderCompare, 60);
+          }
+        });
+      });
+
+      document.querySelectorAll(".kpi-filter-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const table = btn.dataset.table;
+          const filter = btn.dataset.filter;
+          if (!table || !filter) return;
+          if (table === "b") {
+            bState.kpiFilter = bState.kpiFilter === filter ? null : filter;
+            renderBatters();
+          } else if (table === "p") {
+            pState.kpiFilter = pState.kpiFilter === filter ? null : filter;
+            renderPitchers();
+          }
+        });
+      });
+
+      document.querySelectorAll(".kpi-clear-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const table = btn.dataset.table;
+          if (table === "b") {
+            bState.kpiFilter = null;
+            renderBatters();
+          } else if (table === "p") {
+            pState.kpiFilter = null;
+            renderPitchers();
+          }
+        });
+      });
+
+      document.getElementById("b-search").addEventListener("input", e => { bState.search = e.target.value.trim(); renderBatters(); });
+      document.getElementById("b-pos").addEventListener("change", e => { bState.position = e.target.value; renderBatters(); });
+      document.getElementById("b-category").addEventListener("change", e => { bState.category = e.target.value; renderBatters(); });
+      document.getElementById("b-sort").addEventListener("change", e => { bState.sortBy = e.target.value; bState.sortDir = -1; renderBatters(); });
+
+      document.querySelectorAll(".col-preset-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const target = btn.dataset.target;
+          const preset = btn.dataset.preset;
+          if (!target || !preset) return;
+          applyColumnPreset(target, preset);
+        });
+      });
+
+      document.getElementById("p-search").addEventListener("input", e => { pState.search = e.target.value.trim(); renderPitchers(); });
+      document.getElementById("p-role").addEventListener("change", e => { pState.role = e.target.value; renderPitchers(); });
+      document.getElementById("p-category").addEventListener("change", e => { pState.category = e.target.value; renderPitchers(); });
+      document.getElementById("p-sort").addEventListener("change", e => { pState.sortBy = e.target.value; pState.sortDir = -1; renderPitchers(); });
+
+      const toggleWatch = btn => {
+        if (!btn) return;
+        const key = btn.dataset.playerKey;
+        if (!key) return;
+        const toStar = !watchlist.has(key);
+        if (toStar) watchlist.add(key);
+        else watchlist.delete(key);
+        saveWatchlist();
+        btn.classList.toggle("starred", toStar);
+        btn.setAttribute("aria-label", toStar ? "移除觀察名單" : "加入觀察名單");
+        btn.setAttribute("title", toStar ? "已加星號" : "加入觀察名單");
+
+        if (bState.category === "WATCHLIST") renderBatters();
+        if (pState.category === "WATCHLIST") renderPitchers();
+      };
+
+      document.getElementById("b-rows").addEventListener("click", e => {
+        const btn = e.target.closest(".star-btn[data-action='watch']");
+        if (!btn) return;
+        toggleWatch(btn);
+      });
+
+      document.getElementById("p-rows").addEventListener("click", e => {
+        const btn = e.target.closest(".star-btn[data-action='watch']");
+        if (!btn) return;
+        toggleWatch(btn);
+      });
+
+      document.querySelectorAll(".risk-input").forEach(input => {
+        input.addEventListener("input", () => {
+          const role = input.dataset.role;
+          const key = input.dataset.key;
+          if (!role || !key || !riskTuning[role]) return;
+          const val = Math.max(0, safeNum(input.value));
+          riskTuning[role][key] = val;
+          computeAllScores();
+          renderPitchers();
+          renderCompare();
+          calcTrade();
+        });
+      });
+
+      bindSortHeaders("b", bState, renderBatters);
+      bindSortHeaders("p", pState, renderPitchers);
+
+      document.getElementById("cmp-typeA").addEventListener("change", () => { populateCompareSelectors(); renderCompare(); });
+      document.getElementById("cmp-typeB").addEventListener("change", () => { populateCompareSelectors(); renderCompare(); });
+      document.getElementById("cmp-A").addEventListener("change", () => {
+        const sel = document.getElementById("cmp-A");
+        const searchEl = document.getElementById("cmp-A-search");
+        sel.size = 1;
+        sel.classList.remove("select-expanded");
+        if (searchEl) searchEl.value = "";
+        filterSelectOptions(sel, "", _cmpAllA, sel.value);
+        renderCompare();
+      });
+      document.getElementById("cmp-B").addEventListener("change", () => {
+        const sel = document.getElementById("cmp-B");
+        const searchEl = document.getElementById("cmp-B-search");
+        sel.size = 1;
+        sel.classList.remove("select-expanded");
+        if (searchEl) searchEl.value = "";
+        filterSelectOptions(sel, "", _cmpAllB, sel.value);
+        renderCompare();
+      });
+      document.getElementById("cmp-A-search").addEventListener("input", e => {
+        const sel = document.getElementById("cmp-A");
+        filterSelectOptions(sel, e.target.value, _cmpAllA, sel.value);
+        if (e.target.value.trim()) {
+          sel.size = Math.min(8, sel.options.length || 1);
+          sel.classList.add("select-expanded");
+        } else {
+          sel.size = 1;
+          sel.classList.remove("select-expanded");
+          renderCompare();
+        }
+      });
+      document.getElementById("cmp-B-search").addEventListener("input", e => {
+        const sel = document.getElementById("cmp-B");
+        filterSelectOptions(sel, e.target.value, _cmpAllB, sel.value);
+        if (e.target.value.trim()) {
+          sel.size = Math.min(8, sel.options.length || 1);
+          sel.classList.add("select-expanded");
+        } else {
+          sel.size = 1;
+          sel.classList.remove("select-expanded");
+          renderCompare();
+        }
+      });
+
+      window.addEventListener("resize", () => {
+        const activeCompare = document.getElementById("tab-compare").classList.contains("active");
+        if (activeCompare) renderCompare();
+      });
+
+      document.getElementById("t-giveSelect").addEventListener("change", e => {
+        if (!e.target.value) return;
+        addTrade("give", e.target.value);
+        const sel = e.target;
+        const searchEl = document.getElementById("t-give-search");
+        sel.size = 1;
+        sel.classList.remove("select-expanded");
+        sel.value = "";
+        if (searchEl) searchEl.value = "";
+        filterTradeSelect("t-giveSelect", "");
+      });
+      document.getElementById("t-receiveSelect").addEventListener("change", e => {
+        if (!e.target.value) return;
+        addTrade("receive", e.target.value);
+        const sel = e.target;
+        const searchEl = document.getElementById("t-receive-search");
+        sel.size = 1;
+        sel.classList.remove("select-expanded");
+        sel.value = "";
+        if (searchEl) searchEl.value = "";
+        filterTradeSelect("t-receiveSelect", "");
+      });
+      document.getElementById("t-calcBtn").addEventListener("click", calcTrade);
+      document.getElementById("t-give-search").addEventListener("input", e => {
+        filterTradeSelect("t-giveSelect", e.target.value);
+        const sel = document.getElementById("t-giveSelect");
+        if (e.target.value.trim()) {
+          const nonEmpty = sel.options.length - 1;
+          sel.size = Math.min(8, Math.max(1, nonEmpty));
+          sel.classList.add("select-expanded");
+        } else {
+          sel.size = 1;
+          sel.classList.remove("select-expanded");
+        }
+      });
+      document.getElementById("t-receive-search").addEventListener("input", e => {
+        filterTradeSelect("t-receiveSelect", e.target.value);
+        const sel = document.getElementById("t-receiveSelect");
+        if (e.target.value.trim()) {
+          const nonEmpty = sel.options.length - 1;
+          sel.size = Math.min(8, Math.max(1, nonEmpty));
+          sel.classList.add("select-expanded");
+        } else {
+          sel.size = 1;
+          sel.classList.remove("select-expanded");
+        }
+      });
+
+      document.getElementById("t-giveList").addEventListener("click", e => {
+        const pill = e.target.closest(".trade-pill");
+        if (!pill) return;
+        removeTrade(pill.dataset.side, pill.dataset.name);
+      });
+      document.getElementById("t-receiveList").addEventListener("click", e => {
+        const pill = e.target.closest(".trade-pill");
+        if (!pill) return;
+        removeTrade(pill.dataset.side, pill.dataset.name);
+      });
+
+      const fileInput = document.getElementById("fileInput");
+      fileInput.addEventListener("change", async e => {
+        const files = e.target.files;
+        if (!files || !files.length) return;
+        await parseAndApplyFiles(files);
+        e.target.value = "";
+      });
+
+      document.getElementById("importBtn").addEventListener("click", () => {
+        parseAndApply(document.getElementById("pasteArea").value);
+      });
+
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        if (databaseBatters || databasePitchers) {
+          batters = (databaseBatters || DEFAULT_BATTERS).map(p => ({ ...p, playerType: "batter" }));
+          pitchers = (databasePitchers || DEFAULT_PITCHERS).map(p => ({ ...p, playerType: "pitcher" }));
+        } else {
+          batters = DEFAULT_BATTERS.map(p => ({ ...p, playerType: "batter" }));
+          pitchers = DEFAULT_PITCHERS.map(p => ({ ...p, playerType: "pitcher" }));
+        }
+        computeAllScores();
+        tradeState.give = [];
+        tradeState.receive = [];
+        rebuildUi();
+        document.getElementById("pasteArea").value = "";
+        if (databaseBatters || databasePitchers) {
+          const total = batters.length + pitchers.length;
+          document.getElementById("dataSourceLabel").textContent = `資料庫 (${total})`;
+          document.getElementById("footerNote").textContent = `使用本地資料庫，總球員 ${total}`;
+          showStatus("ok", "已重設為本地資料庫");
+        } else {
+          document.getElementById("dataSourceLabel").textContent = "示意資料";
+          document.getElementById("footerNote").textContent = "示意資料，可匯入真實 Yahoo league 資料；支援 H2H Categories / H2H Points。";
+          showStatus("ok", "已重設為示意資料");
+        }
+      });
+
+      const zone = document.getElementById("importZone");
+      zone.addEventListener("dragover", e => {
+        e.preventDefault();
+        zone.classList.add("drag-over");
+      });
+
+      zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
+
+      zone.addEventListener("drop", async e => {
+        e.preventDefault();
+        zone.classList.remove("drag-over");
+        const files = e.dataTransfer.files;
+        if (!files || !files.length) return;
+        await parseAndApplyFiles(files);
+      });
+    }
+
+    function init() {
+      computeAllScores();
+      loadWatchlist();
+      bindEvents();
+      syncModeControls();
+      rebuildUi();
+      autoLoadLocalExports();
+    }
+
+    init();
+  </script>
+</body>
+</html>
